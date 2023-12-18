@@ -1,4 +1,4 @@
-import 'package:cycletech/login_register_page.dart';
+import 'package:cycletech/utilities/login_controller.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const LoginRegisterPage()),
+          MaterialPageRoute(builder: (context) => const LoginController()),
           (route) => false,
         );
       },

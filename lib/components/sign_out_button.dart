@@ -1,4 +1,4 @@
-import 'package:cycletech/auth.dart';
+import 'package:cycletech/utilities/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

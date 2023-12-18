@@ -1,4 +1,4 @@
-import 'package:cycletech/auth.dart';
+import 'package:cycletech/utilities/auth.dart';
 import 'package:cycletech/components/custom_text_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -57,58 +57,76 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
           height: double.infinity,
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Email text field
-              CustomTextField(
-                title: 'Email',
-                type: TextFieldType.normal,
-                controller: _controllerEmail,
-              ),
+          child: SingleChildScrollView(
+            // scrollDirection: Axis.vertical,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const SizedBox(height: 75),
 
-              // Password text field
-              CustomTextField(
-                title: 'Password',
-                type: TextFieldType.password,
-                controller: _controllerPassword,
-              ),
-
-              // Display error message (if any)
-              Text(errorMessage == '' ? '' : '$errorMessage'),
-
-              // Submit button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: isLogin
-                        ? signInWithEmailAndPassword
-                        : createUserWithEmailAndPassword,
-                    child: Text(isLogin ? 'Login' : 'Register'),
+                // Circle Icon
+                const CircleAvatar(
+                  radius: 100,
+                  child: Icon(
+                    Icons.person_2_outlined,
+                    size: 100,
                   ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Row(
-                      children: [
-                        FaIcon(FontAwesomeIcons.google),
-                        SizedBox(width: 10),
-                        Text("Google"),
-                      ],
+                ),
+
+                Column(
+                  children: [
+                    // Email text field
+                    CustomTextField(
+                      title: 'Email',
+                      type: TextFieldType.normal,
+                      controller: _controllerEmail,
                     ),
-                  ),
-                ],
-              ),
 
-              // Switch to Login or Register button
-              TextButton(
-                onPressed: () {
-                  setState(() => isLogin = !isLogin);
-                },
-                child: Text(isLogin ? 'Register instead' : 'Login instead'),
-              ),
-            ],
+                    // Password text field
+                    CustomTextField(
+                      title: 'Password',
+                      type: TextFieldType.password,
+                      controller: _controllerPassword,
+                    ),
+                  ],
+                ),
+
+                // Display error message (if any)
+                Text(errorMessage == '' ? '' : '$errorMessage'),
+
+                // Submit button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: isLogin
+                          ? signInWithEmailAndPassword
+                          : createUserWithEmailAndPassword,
+                      child: Text(isLogin ? 'Login' : 'Register'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: const Row(
+                        children: [
+                          FaIcon(FontAwesomeIcons.google),
+                          SizedBox(width: 10),
+                          Text("Google"),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Switch to Login or Register button
+                TextButton(
+                  onPressed: () {
+                    setState(() => isLogin = !isLogin);
+                  },
+                  child: Text(isLogin ? 'Register instead' : 'Login instead'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
