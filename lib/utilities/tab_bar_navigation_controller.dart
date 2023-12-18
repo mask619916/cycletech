@@ -1,5 +1,9 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:cycletech/tab_pages/achievements_page.dart';
+import 'package:cycletech/tab_pages/go_page.dart';
 import 'package:cycletech/tab_pages/home_page.dart';
+import 'package:cycletech/tab_pages/leaderboards_page.dart';
+import 'package:cycletech/tab_pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -20,12 +24,23 @@ class _TabBarNavigationControllerState
     Icons.settings_outlined,
   ];
 
+  final List<Widget> pagesList = [
+    const HomePage(),
+    const LeaderboardsPage(),
+    const AchievementsPage(),
+    const SettingsPage(),
+    const GoPage(),
+  ];
+
   int _bottomNavIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(),
+      body: IndexedStack(
+        index: _bottomNavIndex,
+        children: pagesList,
+      ),
       floatingActionButton: SizedBox(
         height: 75,
         width: 75,
