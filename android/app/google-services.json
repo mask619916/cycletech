@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "820297198648",
+    "project_id": "cycletech-d4490",
+    "storage_bucket": "cycletech-d4490.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:820297198648:android:c75df9a1f2e8e2887bcacd",
+        "android_client_info": {
+          "package_name": "com.example.cycletech"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0srt3_trqAV5yGVZ2MGozAU-ObqBIWMI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
