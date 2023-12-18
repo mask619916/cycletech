@@ -27,7 +27,11 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.message;
+        if (e.code == "INVALID_LOGIN_CREDENTIALS") {
+          errorMessage = "Invalid user email or password";
+        } else {
+          errorMessage = e.message;
+        }
       });
     }
   }
@@ -40,7 +44,11 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
-        errorMessage = e.message;
+        if (e.code == "INVALID_LOGIN_CREDENTIALS") {
+          errorMessage = "Invalid user email or password";
+        } else {
+          errorMessage = e.message;
+        }
       });
     }
   }
