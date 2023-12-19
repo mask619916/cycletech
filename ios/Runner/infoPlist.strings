@@ -1,0 +1,9 @@
+/* 
+  infoPlist.strings
+  Runner
+
+  Created by mohammad alhussaini on 19/12/2023.
+  
+*/
+
+"NSPhotoLibraryUsageDescription" = "We would like to get permission to access your library to display the user's avatar";

@@ -1,9 +1,11 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:cycletech/models/user_details.dart';
 import 'package:cycletech/tab_pages/achievements_page.dart';
 import 'package:cycletech/tab_pages/go_page.dart';
 import 'package:cycletech/tab_pages/home_page.dart';
 import 'package:cycletech/tab_pages/leaderboards_page.dart';
 import 'package:cycletech/tab_pages/settings_page.dart';
+import 'package:cycletech/utilities/firebase_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -17,6 +19,10 @@ class TabBarNavigationController extends StatefulWidget {
 
 class _TabBarNavigationControllerState
     extends State<TabBarNavigationController> {
+  FirebaseController fc = FirebaseController();
+
+  UserDetails userDetails = UserDetails();
+
   final iconList = <IconData>[
     Icons.home_outlined,
     Icons.leaderboard_outlined,
@@ -24,18 +30,26 @@ class _TabBarNavigationControllerState
     Icons.settings_outlined,
   ];
 
-  final List<Widget> pagesList = [
-    const HomePage(),
-    const LeaderboardsPage(),
-    const AchievementsPage(),
-    const SettingsPage(),
-    const GoPage(),
-  ];
+  List<Widget> pagesList = [];
 
   int _bottomNavIndex = 0;
 
+  void loadUserInfo() {
+    fc.readUserInfo().then((value) => userDetails = value);
+  }
+
   @override
   Widget build(BuildContext context) {
+    loadUserInfo();
+
+    pagesList.addAll([
+      const HomePage(),
+      const LeaderboardsPage(),
+      AchievementsPage(userDetails: userDetails),
+      const SettingsPage(),
+      const GoPage(),
+    ]);
+
     return Scaffold(
       body: IndexedStack(
         index: _bottomNavIndex,
