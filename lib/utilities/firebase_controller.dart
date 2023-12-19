@@ -24,4 +24,12 @@ class FirebaseController {
       weight: userDetailsMap['weight'],
     );
   }
+
+  void CreateAndUpdateUser(UserDetails userDetails) {
+    DocumentReference dr = FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.email);
+
+    dr.set(userDetails.tomap());
+  }
 }

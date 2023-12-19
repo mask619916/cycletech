@@ -22,4 +22,17 @@ class UserDetails {
     this.profileAvatarUrl,
     this.weight,
   });
+
+  Map<String, dynamic> tomap() {
+    return {
+      "dob": dob,
+      "fName": fName,
+      "lName": lName,
+      "gender": gender,
+      "height": height,
+      "weight": weight,
+      "profileAvatarUrl": profileAvatarUrl,
+      "achievements": achievements,
+    };
+  }
 }
