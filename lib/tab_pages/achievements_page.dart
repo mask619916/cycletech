@@ -13,42 +13,98 @@ class AchievementsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String imageUrl;
+    double iconsize = 50;
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Achivements"),
+        backgroundColor: Colors.black87,
+        foregroundColor: Colors.white,
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: Text("Edit"),
+          ),
+        ],
+      ),
       body: SafeArea(
-        child: Column(
-          children: [
-            IconButton(
-              onPressed: () async {
-                ImagePicker picker = ImagePicker();
-                XFile? file =
-                    await picker.pickImage(source: ImageSource.gallery);
-                String fileName =
-                    "${FirebaseAuth.instance.currentUser!.email}_profileAvatar";
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: ListView(
+            children: [
+              Center(
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: CircleAvatar(
+                        radius: iconsize,
+                        child: IconButton(
+                          onPressed: () async {
+                            ImagePicker picker = ImagePicker();
+                            XFile? file = await picker.pickImage(
+                                source: ImageSource.gallery);
+                            String fileName =
+                                "${FirebaseAuth.instance.currentUser!.email}_profileAvatar";
 
-                Reference referenceRoot = FirebaseStorage.instance.ref();
-                Reference referenceDirImages = referenceRoot.child('images');
+                            Reference referenceRoot =
+                                FirebaseStorage.instance.ref();
+                            Reference referenceDirImages =
+                                referenceRoot.child('images');
 
-                Reference referenceImageToUpload =
-                    referenceDirImages.child(fileName);
+                            Reference referenceImageToUpload =
+                                referenceDirImages.child(fileName);
 
-                try {
-                  await referenceImageToUpload
-                      .putFile(File(file!.path)); // store the file
-                  imageUrl = await referenceImageToUpload.getDownloadURL();
-                  // get the link
+                            try {
+                              await referenceImageToUpload
+                                  .putFile(File(file!.path)); // store the file
+                              imageUrl =
+                                  await referenceImageToUpload.getDownloadURL();
+                              // get the link
 
-                  userDetails.profileAvatarUrl = imageUrl;
+                              userDetails.profileAvatarUrl = imageUrl;
 
-                  FirebaseController fc = FirebaseController();
-                  fc.CreateAndUpdateUser(userDetails);
-                } catch (e) {} // todo
-              },
-              icon: const Icon(
-                Icons.photo_album_outlined,
-                size: 100,
+                              FirebaseController fc = FirebaseController();
+                              fc.CreateAndUpdateUser(userDetails);
+                            } catch (e) {} // todo
+                          },
+                          icon: Icon(
+                            Icons.person_2_outlined,
+                            size: iconsize,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 30,
+                    ),
+                    Column(
+                      children: [
+                        Text("name1"),
+                        Text("name1"),
+                        Text("name1"),
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 30),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+            ],
+          ),
         ),
       ),
     );
