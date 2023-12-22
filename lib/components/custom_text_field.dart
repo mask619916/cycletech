@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 enum TextFieldType {
   normal,
-  search,
   password,
+  number,
+  readonly,
 }
 
 class CustomTextField extends StatefulWidget {
@@ -63,17 +64,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
+      readOnly: (widget.type == TextFieldType.readonly) ? true : false,
+      enableInteractiveSelection:
+          (widget.type == TextFieldType.readonly) ? false : true,
       onChanged: widget.onChanged,
+      keyboardType:
+          (widget.type == TextFieldType.number) ? TextInputType.number : null,
       obscureText: (widget.type == TextFieldType.password && !_visibility)
           ? true
           : false,
       decoration: InputDecoration(
         labelText: widget.title,
-        border: (widget.type == TextFieldType.search)
-            ? const OutlineInputBorder()
-            : null,
-        prefixIcon:
-            (widget.type == TextFieldType.search) ? _displaySearchIcon() : null,
         suffixIcon: (widget.type == TextFieldType.password)
             ? _togglePasswordVisibility()
             : widget.trailing,

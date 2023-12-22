@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cycletech/components/dropmenu.dart';
+import 'package:cycletech/globals/globaldata.dart';
+import 'package:cycletech/models/user_details.dart';
 import 'package:cycletech/utilities/auth.dart';
 import 'package:cycletech/components/custom_text_field.dart';
+import 'package:cycletech/utilities/firebase_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,6 +23,11 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
   // This is mainly for the keyboard making the functionality of IOS keyboard better
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerFname = TextEditingController();
+  final TextEditingController _controllerLname = TextEditingController();
+  final TextEditingController _controllerWeight = TextEditingController();
+  final TextEditingController _controllerHeight = TextEditingController();
+  final TextEditingController _controllerDob = TextEditingController();
 
   Future<void> signInWithEmailAndPassword() async {
     try {
@@ -42,6 +52,16 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
+      UserDetails ud = UserDetails(
+        email: _controllerEmail.text,
+        fName: _controllerFname.text,
+        lName: _controllerLname.text,
+        weight: int.parse(_controllerWeight.text),
+        height: int.parse(_controllerHeight.text),
+        gender: selectedgender,
+        dob: Timestamp.fromDate(DateTime.parse(_controllerDob.text)),
+      );
+      FirebaseController.createAndUpdateUser(ud);
     } on FirebaseAuthException catch (e) {
       setState(() {
         if (e.code == "INVALID_LOGIN_CREDENTIALS") {
@@ -51,6 +71,25 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
         }
       });
     }
+  }
+
+// this is a function to create the calender for the date picker in the registration
+  DateTime selectedDate = DateTime.now();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+    _controllerDob.text = selectedDate.toString().substring(0, 10);
   }
 
   @override
@@ -83,6 +122,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                 ),
 
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Email text field
                     CustomTextField(
@@ -97,6 +137,54 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                       type: TextFieldType.password,
                       controller: _controllerPassword,
                     ),
+
+                    //first name input
+                    isLogin
+                        ? Container()
+                        : CustomTextField(
+                            title: 'First Name',
+                            type: TextFieldType.normal,
+                            controller: _controllerFname,
+                          ),
+                    //last name input
+                    isLogin
+                        ? Container()
+                        : CustomTextField(
+                            title: 'Last Name',
+                            type: TextFieldType.normal,
+                            controller: _controllerLname,
+                          ),
+                    //height input
+                    isLogin
+                        ? Container()
+                        : CustomTextField(
+                            title: 'Height',
+                            type: TextFieldType.number,
+                            controller: _controllerHeight,
+                          ),
+                    //weight input
+                    isLogin
+                        ? Container()
+                        : CustomTextField(
+                            title: 'Weight',
+                            type: TextFieldType.number,
+                            controller: _controllerWeight,
+                          ),
+                    //Date of birth input
+                    isLogin
+                        ? Container()
+                        : CustomTextField(
+                            title: 'Date Of Birth',
+                            type: TextFieldType.readonly,
+                            controller: _controllerDob,
+                            trailing: IconButton(
+                              onPressed: () => _selectDate(context),
+                              icon: const Icon(Icons.calendar_month_outlined),
+                            ),
+                          ),
+
+                    // Gender input
+                    isLogin ? Container() : DropdownExample()
                   ],
                 ),
 
