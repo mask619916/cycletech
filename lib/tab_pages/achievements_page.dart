@@ -79,6 +79,16 @@ class _AchievementsPageState extends State<AchievementsPage> {
                             FirebaseController.createAndUpdateUser(
                               widget.userDetails,
                             );
+
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Your avatar has been updated!',
+                                ),
+                                duration: Duration(seconds: 15),
+                              ),
+                            );
                           } catch (e) {
                             if (!mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
