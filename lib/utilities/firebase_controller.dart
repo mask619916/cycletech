@@ -3,7 +3,7 @@ import 'package:cycletech/models/user_details.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseController {
-  Future<UserDetails> readUserInfo() async {
+  static Future<UserDetails> readUserInfo() async {
     DocumentReference dr = FirebaseFirestore.instance
         .collection("users")
         .doc(FirebaseAuth.instance.currentUser!.email);
@@ -25,11 +25,11 @@ class FirebaseController {
     );
   }
 
-  void CreateAndUpdateUser(UserDetails userDetails) {
+  static void createAndUpdateUser(UserDetails userDetails) {
     DocumentReference dr = FirebaseFirestore.instance
         .collection("users")
         .doc(FirebaseAuth.instance.currentUser!.email);
 
-    dr.set(userDetails.tomap());
+    dr.set(userDetails.toMap());
   }
 }

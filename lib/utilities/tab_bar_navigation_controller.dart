@@ -19,42 +19,38 @@ class TabBarNavigationController extends StatefulWidget {
 
 class _TabBarNavigationControllerState
     extends State<TabBarNavigationController> {
-  FirebaseController fc = FirebaseController();
-
-  UserDetails userDetails = UserDetails();
-
-  final iconList = <IconData>[
+  final List<IconData> _iconList = [
     Icons.home_outlined,
     Icons.leaderboard_outlined,
     Icons.person_outline,
     Icons.settings_outlined,
   ];
+  final List<Widget> _pagesList = [];
 
-  List<Widget> pagesList = [];
-
+  UserDetails _userDetails = UserDetails();
+  Widget _currPage = const HomePage();
   int _bottomNavIndex = 0;
-
-  void loadUserInfo() {
-    fc.readUserInfo().then((value) => userDetails = value);
-  }
 
   @override
   Widget build(BuildContext context) {
-    loadUserInfo();
+    // read user's info from firebase
+    FirebaseController.readUserInfo().then((value) => _userDetails = value);
 
-    pagesList.addAll([
+    _pagesList.clear();
+    _pagesList.addAll([
       const HomePage(),
       const LeaderboardsPage(),
-      AchievementsPage(userDetails: userDetails),
+      AchievementsPage(userDetails: _userDetails),
       const SettingsPage(),
       const GoPage(),
     ]);
 
+    setState(() {
+      _currPage = _pagesList[_bottomNavIndex];
+    });
+
     return Scaffold(
-      body: IndexedStack(
-        index: _bottomNavIndex,
-        children: pagesList,
-      ),
+      body: _currPage,
       floatingActionButton: SizedBox(
         height: 75,
         width: 75,
@@ -72,11 +68,11 @@ class _TabBarNavigationControllerState
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
-        itemCount: iconList.length,
+        itemCount: _iconList.length,
         backgroundColor: Colors.black54,
         tabBuilder: (int index, bool isActive) {
           return Icon(
-            iconList[index],
+            _iconList[index],
             size: 24,
             color: isActive ? Colors.green[400] : Colors.white,
           );

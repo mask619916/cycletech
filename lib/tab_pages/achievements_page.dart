@@ -6,23 +6,29 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AchievementsPage extends StatelessWidget {
+class AchievementsPage extends StatefulWidget {
   final UserDetails userDetails;
 
   const AchievementsPage({super.key, required this.userDetails});
+
+  @override
+  State<AchievementsPage> createState() => _AchievementsPageState();
+}
+
+class _AchievementsPageState extends State<AchievementsPage> {
+  final double _iconSize = 50;
+
   @override
   Widget build(BuildContext context) {
-    String imageUrl;
-    double iconsize = 50;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Achivements"),
+        title: const Text("Achievements"),
         backgroundColor: Colors.black87,
         foregroundColor: Colors.white,
         actions: [
           TextButton(
             onPressed: () {},
-            child: Text("Edit"),
+            child: const Text("Edit"),
           ),
         ],
       ),
@@ -36,47 +42,72 @@ class AchievementsPage extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 20),
-                      child: CircleAvatar(
-                        radius: iconsize,
-                        child: IconButton(
-                          onPressed: () async {
-                            ImagePicker picker = ImagePicker();
-                            XFile? file = await picker.pickImage(
-                                source: ImageSource.gallery);
-                            String fileName =
-                                "${FirebaseAuth.instance.currentUser!.email}_profileAvatar";
+                      child: IconButton(
+                        onPressed: () async {
+                          ImagePicker picker = ImagePicker();
 
-                            Reference referenceRoot =
-                                FirebaseStorage.instance.ref();
-                            Reference referenceDirImages =
-                                referenceRoot.child('images');
+                          XFile? file = await picker.pickImage(
+                            source: ImageSource.gallery,
+                          );
 
-                            Reference referenceImageToUpload =
-                                referenceDirImages.child(fileName);
+                          String fileExtension =
+                              file!.name.substring(file.name.indexOf('.'));
 
-                            try {
-                              await referenceImageToUpload
-                                  .putFile(File(file!.path)); // store the file
-                              imageUrl =
-                                  await referenceImageToUpload.getDownloadURL();
-                              // get the link
+                          String fileName =
+                              "${FirebaseAuth.instance.currentUser!.email}_profileAvatar$fileExtension";
 
-                              userDetails.profileAvatarUrl = imageUrl;
+                          Reference referenceRoot =
+                              FirebaseStorage.instance.ref();
 
-                              FirebaseController fc = FirebaseController();
-                              fc.CreateAndUpdateUser(userDetails);
-                            } catch (e) {} // todo
-                          },
-                          icon: Icon(
-                            Icons.person_2_outlined,
-                            size: iconsize,
-                          ),
+                          Reference referenceDirImages =
+                              referenceRoot.child('images');
+
+                          Reference referenceImageToUpload =
+                              referenceDirImages.child(fileName);
+
+                          try {
+                            String? imageUrl;
+
+                            await referenceImageToUpload
+                                .putFile(File(file.path)); // store the file
+
+                            imageUrl = await referenceImageToUpload
+                                .getDownloadURL(); // get the link
+
+                            widget.userDetails.profileAvatarUrl = imageUrl;
+
+                            FirebaseController.createAndUpdateUser(
+                              widget.userDetails,
+                            );
+                          } catch (e) {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'An error has occurred | More Info: $e',
+                                ),
+                                duration: const Duration(seconds: 15),
+                              ),
+                            );
+                          }
+                        },
+                        icon: CircleAvatar(
+                          radius: _iconSize,
+                          backgroundImage:
+                              widget.userDetails.profileAvatarUrl == null ||
+                                      widget.userDetails.profileAvatarUrl == ''
+                                  ? null
+                                  : NetworkImage(
+                                      widget.userDetails.profileAvatarUrl!,
+                                    ),
+                          child: widget.userDetails.profileAvatarUrl == null ||
+                                  widget.userDetails.profileAvatarUrl == ''
+                              ? Icon(Icons.person_2_outlined, size: _iconSize)
+                              : null,
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 30,
-                    ),
+                    const SizedBox(width: 30),
                     Column(
                       children: [
                         Text("name1"),

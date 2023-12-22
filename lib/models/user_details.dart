@@ -15,24 +15,25 @@ class UserDetails {
     this.email,
     this.achievements,
     this.dob,
-    this.fName,
     this.gender,
+    this.weight,
     this.height,
+    this.fName,
     this.lName,
     this.profileAvatarUrl,
-    this.weight,
   });
 
-  Map<String, dynamic> tomap() {
+  Map<String, dynamic> toMap() {
     return {
+      "email": email,
+      "achievements": achievements,
       "dob": dob,
+      "gender": gender,
+      "weight": weight,
+      "height": height,
       "fName": fName,
       "lName": lName,
-      "gender": gender,
-      "height": height,
-      "weight": weight,
       "profileAvatarUrl": profileAvatarUrl,
-      "achievements": achievements,
     };
   }
 }
