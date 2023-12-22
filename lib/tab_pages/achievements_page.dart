@@ -86,7 +86,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                                 content: Text(
                                   'Your avatar has been updated!',
                                 ),
-                                duration: Duration(seconds: 15),
+                                duration: Duration(seconds: 1),
                               ),
                             );
                           } catch (e) {
@@ -96,7 +96,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                                 content: Text(
                                   'An error has occurred | More Info: $e',
                                 ),
-                                duration: const Duration(seconds: 15),
+                                duration: const Duration(seconds: 3),
                               ),
                             );
                           }
@@ -119,10 +119,20 @@ class _AchievementsPageState extends State<AchievementsPage> {
                     ),
                     const SizedBox(width: 30),
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("name1"),
-                        Text("name1"),
-                        Text("name1"),
+                        Text(
+                          widget.userDetails.fName ?? "",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          widget.userDetails.lName ?? "",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          widget.userDetails.gender ?? "",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ],
                     )
                   ],
