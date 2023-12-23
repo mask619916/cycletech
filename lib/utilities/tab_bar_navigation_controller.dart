@@ -69,12 +69,12 @@ class _TabBarNavigationControllerState
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
         itemCount: _iconList.length,
-        backgroundColor: Colors.black54,
+        backgroundColor: Colors.blue[100],
         tabBuilder: (int index, bool isActive) {
           return Icon(
             _iconList[index],
             size: 24,
-            color: isActive ? Colors.green[400] : Colors.white,
+            color: isActive ? Colors.green[400] : Colors.black87,
           );
         },
         activeIndex: _bottomNavIndex,

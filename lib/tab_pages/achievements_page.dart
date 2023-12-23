@@ -23,8 +23,8 @@ class _AchievementsPageState extends State<AchievementsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Achievements"),
-        backgroundColor: Colors.black87,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.blue[100],
+        foregroundColor: Colors.black87,
         actions: [
           TextButton(
             onPressed: () {},

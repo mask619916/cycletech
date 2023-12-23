@@ -1,4 +1,3 @@
-import 'package:cycletech/components/sign_out_button.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:weather/weather.dart';
@@ -19,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _wf.currentWeatherByCityName("Bahrain").then((w) {
+    _wf.currentWeatherByCityName("madinat hamad").then((w) {
       setState(() {
         _weather = w;
       });
@@ -30,9 +29,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("HomePage"),
-        backgroundColor: Colors.black87,
-        foregroundColor: Colors.white,
+        title: const Text("Home"),
+        backgroundColor: Colors.blue[100],
+        foregroundColor: Colors.black87,
       ),
       body: SafeArea(
         child: Column(
