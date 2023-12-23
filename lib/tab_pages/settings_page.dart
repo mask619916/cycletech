@@ -9,19 +9,38 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  Brightness? _brightness;
+
   bool _isdarkmode = false;
   bool _ispublic = false;
 
   void savepref() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('darkmode', _isdarkmode);
+    await prefs.setString('darkmode', _brightness.toString());
     await prefs.setBool('public', _ispublic);
   }
 
   void loadpref() async {
+    String temp;
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    temp = prefs.getString('darkmode') ?? "Brightness.light";
+
     setState(() {
-      _isdarkmode = prefs.getBool('darkmode') ?? false;
+      switch (temp) {
+        case "Brightness.light":
+          _brightness = Brightness.light;
+          _isdarkmode = false;
+          break;
+        case "Brightness.dark":
+          _brightness = Brightness.dark;
+          _isdarkmode = true;
+          break;
+        default:
+          _brightness = Brightness.light;
+          _isdarkmode = false;
+          break;
+      }
+
       _ispublic = prefs.getBool('public') ?? false;
     });
   }
@@ -32,8 +51,8 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Settings"),
-        backgroundColor: Colors.black87,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.blue[100],
+        foregroundColor: Colors.black87,
       ),
       body: SafeArea(
         child: Padding(
