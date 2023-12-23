@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Cycle Tech',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: screenmodeBrightness(),
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
