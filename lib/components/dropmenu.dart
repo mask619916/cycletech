@@ -22,7 +22,7 @@ class _DropdownExampleState extends State<DropdownExample> {
           onChanged: (String? newValue) {
             setState(() {
               selectedValue = newValue!;
-              selectedgender = selectedValue;
+              selectedGender = selectedValue;
             });
           },
           items: <String>['Male', 'Female']

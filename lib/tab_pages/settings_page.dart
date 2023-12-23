@@ -1,3 +1,4 @@
+import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,45 +10,19 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  Brightness? _brightness;
+  bool _isDarkMode = false;
+  bool _isPublic = false;
 
-  bool _isdarkmode = false;
-  bool _ispublic = false;
-
-  void savepref() async {
+  void savePref() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('darkmode', _brightness.toString());
-    await prefs.setBool('public', _ispublic);
-  }
-
-  void loadpref() async {
-    String temp;
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    temp = prefs.getString('darkmode') ?? "Brightness.light";
-
-    setState(() {
-      switch (temp) {
-        case "Brightness.light":
-          _brightness = Brightness.light;
-          _isdarkmode = false;
-          break;
-        case "Brightness.dark":
-          _brightness = Brightness.dark;
-          _isdarkmode = true;
-          break;
-        default:
-          _brightness = Brightness.light;
-          _isdarkmode = false;
-          break;
-      }
-
-      _ispublic = prefs.getBool('public') ?? false;
-    });
+    await prefs.setBool('darkMode', _isDarkMode);
+    await prefs.setBool('public', _isPublic);
   }
 
   @override
   Widget build(BuildContext context) {
-    loadpref();
+    _isDarkMode = (currBrightness == Brightness.dark) ? true : false;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Settings"),
@@ -59,34 +34,36 @@ class _SettingsPageState extends State<SettingsPage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              // Dark mode toggle
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Dark Mode'),
                   Switch(
                     activeColor: Colors.green[400],
-                    value: _isdarkmode,
+                    value: _isDarkMode,
                     onChanged: (value) {
-                      setState(() {
-                        _isdarkmode = value;
-                      });
-                      savepref();
+                      setState(() => _isDarkMode = value);
+                      Brightness temp =
+                          value ? Brightness.dark : Brightness.light;
+                      brightnessStream.add(temp);
+                      savePref();
                     },
                   ),
                 ],
               ),
+
+              // Privacy toggle
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Leaderboard Public Privacy'),
                   Switch(
                     activeColor: Colors.green[400],
-                    value: _ispublic,
+                    value: _isPublic,
                     onChanged: (value) {
-                      setState(() {
-                        _ispublic = value;
-                      });
-                      savepref();
+                      setState(() => _isPublic = value);
+                      savePref();
                     },
                   ),
                 ],

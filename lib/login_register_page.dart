@@ -58,7 +58,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
         lName: _controllerLname.text,
         weight: int.parse(_controllerWeight.text),
         height: int.parse(_controllerHeight.text),
-        gender: selectedgender,
+        gender: selectedGender,
         dob: Timestamp.fromDate(DateTime.parse(_controllerDob.text)),
       );
       FirebaseController.createAndUpdateUser(ud);

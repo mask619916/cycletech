@@ -1,4 +1,5 @@
 import 'package:cycletech/firebase_options.dart';
+import 'package:cycletech/globals/globaldata.dart';
 import 'package:cycletech/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,42 +13,40 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool _darkMode = false;
 
   void getPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    _darkMode = prefs.getBool('darkmode') ?? false;
-  }
+    bool isDarkMode = prefs.getBool('darkMode') ?? false;
+    // bool isPublic = prefs.getBool('public') ?? false; // May be required later on
 
-  Brightness screenmodeBrightness() {
-    getPrefs();
-    if (_darkMode) {
-      return Brightness.dark;
-    } else {
-      return Brightness.light;
-    }
+    Brightness temp = isDarkMode ? Brightness.dark : Brightness.light;
+    brightnessStream.add(temp);
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Cycle Tech',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue.shade100, brightness: Brightness.dark),
-        useMaterial3: true,
-      ),
-      home: const SplashScreen(),
-    );
+    getPrefs();
+
+    return StreamBuilder<Brightness>(
+        initialData: Brightness.light,
+        stream: brightnessStream.stream,
+        builder: (context, snapshot) {
+          currBrightness = snapshot.data;
+          return MaterialApp(
+            title: 'Cycle Tech',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                brightness: snapshot.data ?? Brightness.light,
+                seedColor: Colors.blue.shade100,
+              ),
+              useMaterial3: true,
+            ),
+            home: const SplashScreen(),
+          );
+        });
   }
 }
