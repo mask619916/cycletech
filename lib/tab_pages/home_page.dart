@@ -82,6 +82,14 @@ class _HomePageState extends State<HomePage> {
                                 'Min/Max: ${_weather!.tempMin?.celsius?.toStringAsFixed(0)}°C / ${_weather!.tempMax?.celsius?.toStringAsFixed(0)}°C',
                                 style: const TextStyle(color: Colors.white),
                               ),
+                              Text(
+                                'Wind Speed: ${_weather?.windSpeed?.toStringAsFixed(0)}m/s',
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              Text(
+                                'Humidity: ${_weather?.humidity?.toStringAsFixed(0)}%',
+                                style: const TextStyle(color: Colors.white),
+                              )
                               // Add more weather details as needed
                             ],
                           ),

@@ -1,4 +1,4 @@
-import 'package:cycletech/login_register_page.dart';
+import 'package:cycletech/tab_pages/login_register_page.dart';
 import 'package:cycletech/utilities/auth.dart';
 import 'package:cycletech/utilities/tab_bar_navigation_controller.dart';
 import 'package:flutter/material.dart';
