@@ -1,3 +1,4 @@
+import 'package:cycletech/components/sign_out_button.dart';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,6 +68,12 @@ class _SettingsPageState extends State<SettingsPage> {
                     },
                   ),
                 ],
+              ),
+
+              // Sign-out button
+              Container(
+                margin: const EdgeInsets.only(top: 16.0),
+                child: SignOutButton(),
               ),
             ],
           ),

@@ -5,6 +5,7 @@ import 'package:cycletech/models/user_details.dart';
 import 'package:cycletech/utilities/auth.dart';
 import 'package:cycletech/components/custom_text_field.dart';
 import 'package:cycletech/utilities/firebase_controller.dart';
+import 'package:cycletech/utilities/google_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -202,7 +203,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                       child: Text(isLogin ? 'Login' : 'Register'),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => GoogleAuth().signInWithGoogle(),
                       child: const Row(
                         children: [
                           FaIcon(FontAwesomeIcons.google),

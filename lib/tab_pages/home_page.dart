@@ -1,4 +1,3 @@
-import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:weather/weather.dart';
@@ -31,7 +30,10 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
-        backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.black87 : Colors.blue[100],
+        backgroundColor:
+            MediaQuery.of(context).platformBrightness == Brightness.dark
+                ? Colors.black87
+                : Colors.blue[100],
         foregroundColor: Colors.black87,
       ),
       body: SafeArea(

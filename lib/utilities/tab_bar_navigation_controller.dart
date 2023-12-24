@@ -1,5 +1,4 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:cycletech/globals/globaldata.dart';
 import 'package:cycletech/models/user_details.dart';
 import 'package:cycletech/tab_pages/achievements_page.dart';
 import 'package:cycletech/tab_pages/go_page.dart';
