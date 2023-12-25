@@ -1,4 +1,5 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:cycletech/globals/globaldata.dart';
 import 'package:cycletech/models/user_details.dart';
 import 'package:cycletech/tab_pages/achievements_page.dart';
 import 'package:cycletech/tab_pages/go_page.dart';
@@ -70,10 +71,9 @@ class _TabBarNavigationControllerState
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
         itemCount: _iconList.length,
-        backgroundColor:
-            MediaQuery.of(context).platformBrightness == Brightness.dark
-                ? Colors.black87
-                : Colors.blue[100],
+        backgroundColor: currBrightness == Brightness.dark
+            ? Colors.black87
+            : Colors.blue[100],
         tabBuilder: (int index, bool isActive) {
           return Icon(
             _iconList[index],
