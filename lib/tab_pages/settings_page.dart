@@ -13,11 +13,29 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   bool _isDarkMode = false;
   bool _isPublic = false;
+  late String _selectedLocation = "Bahrain"; // Initialize with a default value
+
+  @override
+  void initState() {
+    super.initState();
+    // Load preferences when initializing the state
+    loadPrefs();
+  }
+
+  void loadPrefs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDarkMode = prefs.getBool('darkMode') ?? false;
+      _isPublic = prefs.getBool('public') ?? false;
+      _selectedLocation = prefs.getString('location') ?? "Bahrain";
+    });
+  }
 
   void savePref() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('darkMode', _isDarkMode);
     await prefs.setBool('public', _isPublic);
+    await prefs.setString('location', _selectedLocation);
   }
 
   @override
@@ -66,6 +84,40 @@ class _SettingsPageState extends State<SettingsPage> {
                       setState(() => _isPublic = value);
                       savePref();
                     },
+                  ),
+                ],
+              ),
+
+              // Location dropdown
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Location'),
+                  DropdownButton<String>(
+                    value: _selectedLocation,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedLocation = newValue!;
+                      });
+                      savePref();
+                    },
+                    items: [
+                      "Bahrain",
+                      "Manama",
+                      "Madinat Hamad",
+                      "Madinat Isa",
+                      "Al Muharraq",
+                      "Umm ash Sha‘ūm",
+                      "Sitrah",
+                      "Samāhīj",
+                      "Al Hadd",
+                      "Dar Kulayb",
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),

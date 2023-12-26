@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:weather/weather.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utilities/conts.dart';
 
@@ -18,7 +19,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _wf.currentWeatherByCityName("madinat hamad").then((w) {
+    _getLocationAndFetchWeather();
+  }
+
+  Future<void> _getLocationAndFetchWeather() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String location = prefs.getString('location') ?? "Bahrain";
+
+    _wf.currentWeatherByCityName(location).then((w) {
       setState(() {
         _weather = w;
       });
