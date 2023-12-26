@@ -1,10 +1,15 @@
+// SettingsPage
+
 import 'package:cycletech/components/sign_out_button.dart';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  final Function(bool) onDarkModeChanged;
+
+  const SettingsPage({Key? key, required this.onDarkModeChanged})
+      : super(key: key);
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -36,11 +41,12 @@ class _SettingsPageState extends State<SettingsPage> {
     await prefs.setBool('darkMode', _isDarkMode);
     await prefs.setBool('public', _isPublic);
     await prefs.setString('location', _selectedLocation);
+    widget.onDarkModeChanged(_isDarkMode);
   }
 
   @override
   Widget build(BuildContext context) {
-    _isDarkMode = (currBrightness == Brightness.dark) ? true : false;
+    _isDarkMode = (currBrightness == Brightness.dark);
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +59,6 @@ class _SettingsPageState extends State<SettingsPage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // Dark mode toggle
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -71,8 +76,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
-
-              // Privacy toggle
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -87,8 +90,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
-
-              // Location dropdown
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -121,8 +122,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
-
-              // Sign-out button
               Container(
                 margin: const EdgeInsets.only(top: 16.0),
                 child: SignOutButton(),

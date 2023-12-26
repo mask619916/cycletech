@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TabBarNavigationController extends StatefulWidget {
-  const TabBarNavigationController({super.key});
+  const TabBarNavigationController({Key? key}) : super(key: key);
 
   @override
   State<TabBarNavigationController> createState() =>
@@ -26,30 +26,44 @@ class _TabBarNavigationControllerState
     Icons.person_outline,
     Icons.settings_outlined,
   ];
-  final List<Widget> _pagesList = [];
 
-  UserDetails _userDetails = UserDetails();
-  Widget _currPage = const HomePage();
+  late UserDetails _userDetails;
+  late List<Widget> _pagesList;
+  late Widget _currPage;
   int _bottomNavIndex = 0;
 
   @override
-  Widget build(BuildContext context) {
-    // read user's info from firebase
-    FirebaseController.readUserInfo().then((value) => _userDetails = value);
-
-    _pagesList.clear();
-    _pagesList.addAll([
+  void initState() {
+    super.initState();
+    _userDetails = UserDetails();
+    _currPage =
+        Container(); // Placeholder widget, 
+    _pagesList = [
       const HomePage(),
       const LeaderboardsPage(),
       AchievementsPage(userDetails: _userDetails),
-      const SettingsPage(),
+      SettingsPage(
+        onDarkModeChanged: (isDarkMode) {
+          setState(() {
+            _bottomNavIndex = 3 % _pagesList.length;
+          });
+        },
+      ),
       const GoPage(),
-    ]);
+    ];
 
-    setState(() {
-      _currPage = _pagesList[_bottomNavIndex];
+    // read user's info from firebase
+    FirebaseController.readUserInfo().then((value) {
+      setState(() {
+        _userDetails = value;
+        _pagesList[2] = AchievementsPage(userDetails: _userDetails);
+        _currPage = _pagesList[_bottomNavIndex];
+      });
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: _currPage,
       floatingActionButton: SizedBox(
@@ -58,7 +72,7 @@ class _TabBarNavigationControllerState
         child: FloatingActionButton(
           onPressed: () {
             setState(() {
-              _bottomNavIndex = 4;
+              _bottomNavIndex = 4 % _pagesList.length;
             });
           },
           backgroundColor: Colors.greenAccent,
@@ -88,7 +102,8 @@ class _TabBarNavigationControllerState
         rightCornerRadius: 32,
         onTap: (index) {
           setState(() {
-            _bottomNavIndex = index;
+            _bottomNavIndex = index % _pagesList.length;
+            _currPage = _pagesList[_bottomNavIndex];
           });
         },
       ),
