@@ -36,8 +36,7 @@ class _TabBarNavigationControllerState
   void initState() {
     super.initState();
     _userDetails = UserDetails();
-    _currPage =
-        Container(); // Placeholder widget, 
+    _currPage = Container(); // Placeholder widget,
     _pagesList = [
       const HomePage(),
       const LeaderboardsPage(),
@@ -77,7 +76,8 @@ class _TabBarNavigationControllerState
           },
           backgroundColor: Colors.greenAccent,
           splashColor: Colors.cyan[200],
-          foregroundColor: Colors.black87,
+          foregroundColor:
+              currBrightness == Brightness.dark ? Colors.white : Colors.black87,
           shape: const CircleBorder(),
           child: const FaIcon(FontAwesomeIcons.personBiking),
         ),
@@ -86,13 +86,17 @@ class _TabBarNavigationControllerState
       bottomNavigationBar: AnimatedBottomNavigationBar.builder(
         itemCount: _iconList.length,
         backgroundColor: currBrightness == Brightness.dark
-            ? Colors.black87
+            ? Colors.black54
             : Colors.blue[100],
         tabBuilder: (int index, bool isActive) {
           return Icon(
             _iconList[index],
             size: 24,
-            color: isActive ? Colors.green[400] : Colors.black87,
+            color: isActive
+                ? Colors.green[400]
+                : currBrightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black87,
           );
         },
         activeIndex: _bottomNavIndex,

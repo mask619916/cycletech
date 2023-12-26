@@ -1,3 +1,4 @@
+import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:weather/weather.dart';
@@ -38,11 +39,11 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
-        backgroundColor:
-            MediaQuery.of(context).platformBrightness == Brightness.dark
-                ? Colors.black87
-                : Colors.blue[100],
-        foregroundColor: Colors.black87,
+        backgroundColor: currBrightness == Brightness.dark
+            ? Colors.black54
+            : Colors.blue[100],
+        foregroundColor:
+            currBrightness == Brightness.dark ? Colors.white : Colors.black54,
       ),
       body: SafeArea(
         child: Column(
@@ -51,16 +52,20 @@ class _HomePageState extends State<HomePage> {
             // Top more than 1/4 of the screen for weather information
             Container(
               height: MediaQuery.of(context).size.height * 0.28,
-              color: Colors.blue,
+              color: currBrightness == Brightness.dark
+                  ? Colors.grey[700]
+                  : Colors.blue[300],
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Current Weather',
                     style: TextStyle(
                       fontSize: 24,
-                      color: Colors.white,
+                      color: currBrightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -79,24 +84,44 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Text(
                                 'Location: ${_weather?.areaName ?? ""}',
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: currBrightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
                               ),
                               _dateTimeInfo(),
                               Text(
                                 'Temperature: ${_weather!.temperature?.celsius?.toStringAsFixed(0)}°C',
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: currBrightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
                               ),
                               Text(
                                 'Min/Max: ${_weather!.tempMin?.celsius?.toStringAsFixed(0)}°C / ${_weather!.tempMax?.celsius?.toStringAsFixed(0)}°C',
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: currBrightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
                               ),
                               Text(
                                 'Wind Speed: ${_weather?.windSpeed?.toStringAsFixed(0)}m/s',
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: currBrightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
                               ),
                               Text(
                                 'Humidity: ${_weather?.humidity?.toStringAsFixed(0)}%',
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: currBrightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
                               )
                               // Add more weather details as needed
                             ],
@@ -124,9 +149,11 @@ class _HomePageState extends State<HomePage> {
       children: [
         Text(
           DateFormat("h:mm a").format(now),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
-            color: Colors.white,
+            color: currBrightness == Brightness.dark
+                ? Colors.white
+                : Colors.black87,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -140,17 +167,21 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(
               DateFormat("EEEE").format(now),
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: currBrightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black87,
                 fontSize: 18,
               ),
             ),
             Text(
               "  ${DateFormat("d.M.y").format(now)}",
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.normal,
-                color: Colors.white,
+                color: currBrightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black87,
                 fontSize: 16,
               ),
             ),
@@ -176,17 +207,21 @@ class _HomePageState extends State<HomePage> {
         if (_weather?.weatherDescription != null)
           Text(
             _weather!.weatherDescription!,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: currBrightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black87,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
         if (_weather == null || _weather!.weatherIcon == null)
-          const Text(
+          Text(
             "Weather information not available",
             style: TextStyle(
-              color: Colors.white,
+              color: currBrightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black87,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),

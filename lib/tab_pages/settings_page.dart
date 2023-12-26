@@ -51,8 +51,11 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Settings"),
-        backgroundColor: Colors.blue[100],
-        foregroundColor: Colors.black87,
+        backgroundColor: currBrightness == Brightness.dark
+            ? Colors.black54
+            : Colors.blue[100],
+        foregroundColor:
+            currBrightness == Brightness.dark ? Colors.white : Colors.black54,
       ),
       body: SafeArea(
         child: Padding(

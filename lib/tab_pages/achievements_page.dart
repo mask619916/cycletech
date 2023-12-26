@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cycletech/globals/globaldata.dart';
 import 'package:cycletech/models/user_details.dart';
 import 'package:cycletech/utilities/firebase_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,8 +24,11 @@ class _AchievementsPageState extends State<AchievementsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Achievements"),
-        backgroundColor: Colors.blue[100],
-        foregroundColor: Colors.black87,
+        backgroundColor: currBrightness == Brightness.dark
+            ? Colors.black54
+            : Colors.blue[100],
+        foregroundColor:
+            currBrightness == Brightness.dark ? Colors.white : Colors.black54,
         actions: [
           TextButton(
             onPressed: () {},

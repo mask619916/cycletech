@@ -1,3 +1,4 @@
+import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
 
 class LeaderboardsPage extends StatelessWidget {
@@ -10,8 +11,11 @@ class LeaderboardsPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Leaderboards'),
-          backgroundColor: Colors.blue[100],
-          foregroundColor: Colors.black87,
+          backgroundColor: currBrightness == Brightness.dark
+              ? Colors.black54
+              : Colors.blue[100],
+          foregroundColor:
+              currBrightness == Brightness.dark ? Colors.white : Colors.black54,
           bottom: TabBar(
             tabs: [
               Tab(text: 'Daily'),
