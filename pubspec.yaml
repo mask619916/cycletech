@@ -50,6 +50,7 @@ dependencies:
   flutter_map: ^6.1.0
   sliding_up_panel: ^2.0.0+1
   permission_handler: ^11.1.0
+  geolocator: ^10.1.0
 
 
 dev_dependencies:
