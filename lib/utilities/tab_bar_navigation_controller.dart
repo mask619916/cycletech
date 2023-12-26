@@ -71,7 +71,8 @@ class _TabBarNavigationControllerState
         child: FloatingActionButton(
           onPressed: () {
             setState(() {
-              _bottomNavIndex = 4 % _pagesList.length;
+              _bottomNavIndex = 4;
+              _currPage = _pagesList[_bottomNavIndex];
             });
           },
           backgroundColor: Colors.greenAccent,
