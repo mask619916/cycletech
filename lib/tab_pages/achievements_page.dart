@@ -24,7 +24,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Achievements"),
+        title: const Text("Profile"),
         backgroundColor: currBrightness == Brightness.dark
             ? Colors.black54
             : Colors.blue[100],
@@ -40,86 +40,30 @@ class _AchievementsPageState extends State<AchievementsPage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
                 child: Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: IconButton(
-                        onPressed: () async {
-                          ImagePicker picker = ImagePicker();
-
-                          XFile? file = await picker.pickImage(
-                            source: ImageSource.gallery,
-                          );
-
-                          String fileExtension =
-                              file!.name.substring(file.name.indexOf('.'));
-
-                          String fileName =
-                              "${FirebaseAuth.instance.currentUser!.email}_profileAvatar$fileExtension";
-
-                          Reference referenceRoot =
-                              FirebaseStorage.instance.ref();
-
-                          Reference referenceDirImages =
-                              referenceRoot.child('images');
-
-                          Reference referenceImageToUpload =
-                              referenceDirImages.child(fileName);
-
-                          try {
-                            String? imageUrl;
-
-                            await referenceImageToUpload
-                                .putFile(File(file.path)); // store the file
-
-                            imageUrl = await referenceImageToUpload
-                                .getDownloadURL(); // get the link
-
-                            widget.userDetails.profileAvatarUrl = imageUrl;
-
-                            FirebaseController.createAndUpdateUser(
-                              widget.userDetails,
-                            );
-
-                            if (!mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Your avatar has been updated!',
-                                ),
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          } catch (e) {
-                            if (!mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'An error has occurred | More Info: $e',
-                                ),
-                                duration: const Duration(seconds: 3),
-                              ),
-                            );
-                          }
-                        },
-                        icon: CircleAvatar(
-                          radius: _iconSize,
-                          backgroundImage:
-                              widget.userDetails.profileAvatarUrl == null ||
-                                      widget.userDetails.profileAvatarUrl == ''
-                                  ? null
-                                  : NetworkImage(
-                                      widget.userDetails.profileAvatarUrl!,
-                                    ),
-                          child: widget.userDetails.profileAvatarUrl == null ||
-                                  widget.userDetails.profileAvatarUrl == ''
-                              ? Icon(Icons.person_2_outlined, size: _iconSize)
-                              : null,
-                        ),
+                    IconButton(
+                      onPressed: () async {
+                        // Add your image picker logic here
+                      },
+                      icon: CircleAvatar(
+                        radius: _iconSize,
+                        backgroundImage:
+                            widget.userDetails.profileAvatarUrl == null ||
+                                    widget.userDetails.profileAvatarUrl == ''
+                                ? null
+                                : NetworkImage(
+                                    widget.userDetails.profileAvatarUrl!,
+                                  ),
+                        child: widget.userDetails.profileAvatarUrl == null ||
+                                widget.userDetails.profileAvatarUrl == ''
+                            ? Icon(Icons.person_2_outlined, size: _iconSize)
+                            : null,
                       ),
                     ),
                     const SizedBox(width: 30),
@@ -143,32 +87,63 @@ class _AchievementsPageState extends State<AchievementsPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 30),
-              ListTile(
-                  leading: FaIcon(FontAwesomeIcons.anchor),
-                  title: Text(
-                      "To unlock this achievement complete 10km of bicycle riding.")),
-              ListTile(
-                  leading: FaIcon(FontAwesomeIcons.handFist),
-                  title: Text(
-                      "To unlock this achievement go on 6 different cycling explorations.")),
-              ListTile(
-                  leading: FaIcon(
-                    FontAwesomeIcons.sun,
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Text(
+                  "Achievements",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
-                  title: Text(
-                      "To unlock this achievement go on a bicycle ride early in the morning.")),
-              ListTile(
-                  leading: FaIcon(FontAwesomeIcons.meteor),
-                  title: Text(
-                      "To unlock this achievement complete 2km bicycle ride in less than 2 hours.")),
-              ListTile(
-                  leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
-                  title:
-                      Text("To unlock this achievement log in for 30 days.")),
-              ListTile(
-                  leading: FaIcon(FontAwesomeIcons.award),
-                  title: Text("Complete all Achievements")),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    ListTile(
+                      contentPadding: EdgeInsets.all(10),
+                      leading: FaIcon(FontAwesomeIcons.anchor),
+                      title: Text(
+                          "To unlock this achievement complete 10km of bicycle riding."),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(10),
+                      leading: FaIcon(FontAwesomeIcons.handFist),
+                      title: Text(
+                          "To unlock this achievement go on 6 different cycling explorations."),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(10),
+                      leading: FaIcon(FontAwesomeIcons.sun),
+                      title: Text(
+                          "To unlock this achievement go on a bicycle ride early in the morning."),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(10),
+                      leading: FaIcon(FontAwesomeIcons.meteor),
+                      title: Text(
+                          "To unlock this achievement complete 2km bicycle ride in less than 2 hours."),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(10),
+                      leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
+                      title: Text(
+                          "To unlock this achievement log in for 30 days."),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.all(10),
+                      leading: FaIcon(FontAwesomeIcons.award),
+                      title: Text("Complete all Achievements"),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
