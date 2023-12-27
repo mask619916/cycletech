@@ -116,5 +116,6 @@ String getRandomQuote() {
 
   final Random random = Random();
   final int randomIndex = random.nextInt(quotes.length);
+
   return quotes[randomIndex];
 }

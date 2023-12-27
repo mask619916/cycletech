@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
@@ -14,25 +15,35 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   final WeatherFactory _wf = WeatherFactory(OPENWEATHER_API_KEY);
   Weather? _weather;
   late String _quoteOfTheDay;
 
   late Timer _quoteTimer;
+  late bool _isVisible;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
-    _quoteOfTheDay = ""; // Initialize with an empty string
+    _isVisible = true;
+    _quoteOfTheDay = "";
     _getLocationAndFetchWeather();
     _setupQuoteTimer();
     _updateQuoteOfTheDay();
   }
 
   void _setupQuoteTimer() {
-    _quoteTimer = Timer.periodic(Duration(days: 1), (_) {
-      _updateQuoteOfTheDay();
+    _quoteTimer = Timer.periodic(Duration(minutes: 1), (_) {
+      if (_isVisible &&
+          SchedulerBinding.instance?.lifecycleState ==
+              AppLifecycleState.resumed) {
+        _updateQuoteOfTheDay();
+      }
     });
   }
 
@@ -48,26 +59,27 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _updateQuoteOfTheDay() async {
+    print("Forcing Update Quote of the Day...");
+
     String quoteKey = 'quote_of_the_day';
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // Check if there's a saved quote
-    String? savedQuote = prefs.getString(quoteKey);
+    // reading quote from local storage
 
-    if (savedQuote != null && savedQuote.isNotEmpty) {
-      // Use the saved quote
-      setState(() {
-        _quoteOfTheDay = savedQuote;
-      });
-    } else {
-      // Generate a new quote and save it
-      String newQuote = getRandomQuote();
-      prefs.setString(quoteKey, newQuote);
+    String loadedquote = prefs.getString(quoteKey) ?? "";
+    // Generate a new quote and save it
+    String newQuote = getRandomQuote();
+    prefs.setString(quoteKey, newQuote);
 
-      setState(() {
-        _quoteOfTheDay = newQuote;
-      });
+    // Check if the widget is still mounted
+    if (!mounted) {
+      return;
     }
+
+    setState(() {
+      print("Setting state with new quote: $newQuote");
+      _quoteOfTheDay = newQuote;
+    });
   }
 
   @override
@@ -77,7 +89,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _isVisible = true;
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    _isVisible = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context); // Call super.build
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Home"),
@@ -246,11 +272,11 @@ class _HomePageState extends State<HomePage> {
             Text(
               "  ${DateFormat("d.M.y").format(now)}",
               style: TextStyle(
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.bold,
                 color: currBrightness == Brightness.dark
                     ? Colors.white
                     : Colors.black87,
-                fontSize: 16,
+                fontSize: 18,
               ),
             ),
           ],
@@ -260,31 +286,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _weatherIcon() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        if (_weather?.weatherIcon != null)
-          Container(
-            height: MediaQuery.of(context).size.height * 0.15,
-            child: Image.network(
-              "http://openweathermap.org/img/wn/${_weather!.weatherIcon}@2x.png",
-            ),
-          ),
-        if (_weather?.weatherDescription != null)
-          Text(
-            _weather!.weatherDescription!,
-            style: TextStyle(
-              color: currBrightness == Brightness.dark
-                  ? Colors.white
-                  : Colors.black87,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        if (_weather == null || _weather!.weatherIcon == null)
-          Text(
+    return _weather?.weatherIcon != null
+        ? Column(
+            children: [
+              Image.network(
+                "http://openweathermap.org/img/wn/${_weather!.weatherIcon}@2x.png",
+                scale: 0.7,
+              ),
+              Text(
+                _weather!.weatherMain ?? "Weather information not available",
+                style: TextStyle(
+                  color: currBrightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black87,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          )
+        : Text(
             "Weather information not available",
             style: TextStyle(
               color: currBrightness == Brightness.dark
@@ -293,8 +314,6 @@ class _HomePageState extends State<HomePage> {
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
-          ),
-      ],
-    );
+          );
   }
 }
