@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
 import '../utilities/conts.dart';
-import '../utilities/quote_generator.dart'; // Import your quote generator
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  HomePage({Key? key, required this.quoteOfTheDay}) : super(key: key);
+
+  final String quoteOfTheDay;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -18,11 +18,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final WeatherFactory _wf = WeatherFactory(OPENWEATHER_API_KEY);
   Weather? _weather;
-
-  String _quoteOfTheDay = '';
-  int _countdownInSeconds = 50;
-  late Timer _quoteTimer;
-  late bool _isVisible;
 
   // Weather stuff
   Widget _dateTimeInfo() {
@@ -117,77 +112,10 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Quote stuff
-  void _setupQuoteTimer() {
-    _quoteTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) {
-        if (_countdownInSeconds == 0) {
-          _countdownInSeconds = 50;
-
-          if (_isVisible &&
-              SchedulerBinding.instance.lifecycleState ==
-                  AppLifecycleState.resumed) {
-            _updateQuoteOfTheDay();
-          }
-        } else {
-          _countdownInSeconds--;
-        }
-
-        print("${_countdownInSeconds} seconds until quote update check");
-      },
-    );
-  }
-
-  void _updateQuoteOfTheDay() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // print("Forcing Update Quote of the Day...");
-
-    String quoteKey = 'quote_of_the_day';
-
-    DateTime now = DateTime.now();
-    // print("${now.hour}h:${now.minute}m");
-    if (now.hour == 8 && now.minute == 0) {
-      // Generate a new quote and save it
-      String newQuote = getRandomQuote();
-      prefs.setString(quoteKey, newQuote);
-
-      // Check if the widget is still mounted
-      if (!mounted) return;
-
-      setState(() {
-        // print("Setting state with new quote: $newQuote");
-        _quoteOfTheDay = newQuote;
-      });
-    } else {
-      // reading quote from local storage
-      String loadedQuote = prefs.getString(quoteKey) ?? "";
-
-      // Check if the widget is still mounted
-      if (!mounted) return;
-
-      setState(() {
-        // print("Setting state with new quote: $loadedQuote");
-        _quoteOfTheDay = loadedQuote;
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _isVisible = true;
     _getLocationAndFetchWeather();
-
-    _setupQuoteTimer();
-    _updateQuoteOfTheDay();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _quoteTimer.cancel();
   }
 
   @override
@@ -308,7 +236,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    _quoteOfTheDay,
+                    widget.quoteOfTheDay,
                     style: TextStyle(
                       color: currBrightness == Brightness.dark
                           ? Colors.white

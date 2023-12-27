@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:cycletech/models/user_details.dart';
@@ -9,6 +10,9 @@ import 'package:cycletech/tab_pages/settings_page.dart';
 import 'package:cycletech/utilities/firebase_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../utilities/quote_generator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/scheduler.dart';
 
 class TabBarNavigationController extends StatefulWidget {
   const TabBarNavigationController({Key? key}) : super(key: key);
@@ -32,24 +36,77 @@ class _TabBarNavigationControllerState
   late Widget _currPage;
   int _bottomNavIndex = 0;
 
+  String _quoteOfTheDay = '';
+  int _countdownInSeconds = 50;
+  late Timer _quoteTimer;
+  late bool _isVisible;
+
+  // Quote stuff
+  void _setupQuoteTimer() {
+    _quoteTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (timer) {
+        if (_countdownInSeconds == 0) {
+          _countdownInSeconds = 50;
+
+          if (_isVisible &&
+              SchedulerBinding.instance.lifecycleState ==
+                  AppLifecycleState.resumed) {
+            _updateQuoteOfTheDay();
+          }
+        } else {
+          _countdownInSeconds--;
+        }
+
+        print("${_countdownInSeconds} seconds until quote update check");
+      },
+    );
+  }
+
+  void _updateQuoteOfTheDay() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // print("Forcing Update Quote of the Day...");
+
+    String quoteKey = 'quote_of_the_day';
+
+    DateTime now = DateTime.now();
+    // print("${now.hour}h:${now.minute}m");
+    if (now.hour == 8 && now.minute == 0) {
+      // Generate a new quote and save it
+      String newQuote = getRandomQuote();
+      prefs.setString(quoteKey, newQuote);
+
+      // Check if the widget is still mounted
+      if (!mounted) return;
+
+      setState(() {
+        // print("Setting state with new quote: $newQuote");
+        _quoteOfTheDay = newQuote;
+      });
+    } else {
+      // reading quote from local storage
+      String loadedQuote = prefs.getString(quoteKey) ?? "";
+
+      // Check if the widget is still mounted
+      if (!mounted) return;
+
+      setState(() {
+        // print("Setting state with new quote: $loadedQuote");
+        _quoteOfTheDay = loadedQuote;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _isVisible = true;
+    _setupQuoteTimer();
+    _updateQuoteOfTheDay();
+
     _userDetails = UserDetails();
-    _currPage = Container(); // Placeholder widget,
-    _pagesList = [
-      const HomePage(),
-      const LeaderboardsPage(),
-      AchievementsPage(userDetails: _userDetails),
-      SettingsPage(
-        onDarkModeChanged: (isDarkMode) {
-          setState(() {
-            _bottomNavIndex = 3 % _pagesList.length;
-          });
-        },
-      ),
-      const GoPage(),
-    ];
+    _currPage = Container();
 
     // read user's info from firebase
     FirebaseController.readUserInfo().then((value) {
@@ -62,7 +119,27 @@ class _TabBarNavigationControllerState
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _quoteTimer.cancel();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _pagesList = [
+      HomePage(quoteOfTheDay: _quoteOfTheDay),
+      const LeaderboardsPage(),
+      AchievementsPage(userDetails: _userDetails),
+      SettingsPage(
+        onDarkModeChanged: (isDarkMode) {
+          setState(() {
+            _bottomNavIndex = 3 % _pagesList.length;
+          });
+        },
+      ),
+      const GoPage(),
+    ];
+
     return Scaffold(
       body: _currPage,
       floatingActionButton: SizedBox(
