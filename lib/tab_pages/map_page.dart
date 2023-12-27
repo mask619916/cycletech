@@ -81,6 +81,35 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  Widget displayControls() {
+    return Column(
+      children: [
+        SizedBox(height: 10),
+        Text('00h:00m:00s'),
+        Row(
+          children: [
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.play_circle_fill_rounded,
+                size: 70,
+                color: Colors.green,
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.play_circle_fill_rounded,
+                size: 70,
+                color: Colors.green,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -98,7 +127,15 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       appBar: AppBar(title: Text('Enjoy your ride!')),
       body: SlidingUpPanel(
-        panel: Container(),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        color: Color.fromARGB(255, 16, 16, 16),
+        parallaxEnabled: true,
+        parallaxOffset: 0.6,
+        minHeight: 120,
+        panel: displayControls(),
         body: Stack(
           children: [
             FlutterMap(
