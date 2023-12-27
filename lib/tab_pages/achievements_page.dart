@@ -5,6 +5,7 @@ import 'package:cycletech/utilities/firebase_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AchievementsPage extends StatefulWidget {
@@ -143,21 +144,31 @@ class _AchievementsPageState extends State<AchievementsPage> {
                 ),
               ),
               SizedBox(height: 30),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
-              ListTile(leading: Icon(Icons.ac_unit), title: Text("pussio fam")),
+              ListTile(
+                  leading: FaIcon(FontAwesomeIcons.anchor),
+                  title: Text(
+                      "To unlock this achievement complete 10km of bicycle riding.")),
+              ListTile(
+                  leading: FaIcon(FontAwesomeIcons.handFist),
+                  title: Text(
+                      "To unlock this achievement go on 6 different cycling explorations.")),
+              ListTile(
+                  leading: FaIcon(
+                    FontAwesomeIcons.sun,
+                  ),
+                  title: Text(
+                      "To unlock this achievement go on a bicycle ride early in the morning.")),
+              ListTile(
+                  leading: FaIcon(FontAwesomeIcons.meteor),
+                  title: Text(
+                      "To unlock this achievement complete 2km bicycle ride in less than 2 hours.")),
+              ListTile(
+                  leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
+                  title:
+                      Text("To unlock this achievement log in for 30 days.")),
+              ListTile(
+                  leading: FaIcon(FontAwesomeIcons.award),
+                  title: Text("Complete all Achievements")),
             ],
           ),
         ),

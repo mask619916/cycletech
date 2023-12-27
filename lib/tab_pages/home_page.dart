@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
-
 import '../utilities/conts.dart';
 import '../utilities/quote_generator.dart'; // Import your quote generator
 

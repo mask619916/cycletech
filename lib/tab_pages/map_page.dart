@@ -19,7 +19,7 @@ class _MapPageState extends State<MapPage> {
   LatLng _locationCords = LatLng(0, 0);
 
   void _initPositionStream() {
-    int distanceFilterInMeters = 50;
+    int distanceFilterInMeters = 0;
     LocationSettings locationSettings;
 
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -67,7 +67,7 @@ class _MapPageState extends State<MapPage> {
         });
         // print(_locationCords);
 
-        _mapController.move(_locationCords, 16);
+        _mapController.move(_locationCords, 18);
       },
     );
   }
