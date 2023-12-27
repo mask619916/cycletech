@@ -3,6 +3,8 @@
         "cupertino",
         "cycletech",
         "firestore",
+        "Geolocator",
+        "latlong",
         "leaderboard",
         "Leaderboards",
         "unfocus"
