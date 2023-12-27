@@ -1,3 +1,4 @@
+import 'package:cycletech/globals/globaldata.dart';
 import 'package:cycletech/tab_pages/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -20,11 +21,14 @@ class _GoPageState extends State<GoPage> {
     if (isLocationAccessPermitted) {
       setState(() {
         _displayedWidget = CircleAvatar(
-          backgroundColor: Colors.black87,
+          backgroundColor:
+              currBrightness == Brightness.dark ? Colors.white : Colors.black87,
           radius: 110,
           child: CircleAvatar(
             radius: 100,
-            backgroundColor: Colors.blue[100],
+            backgroundColor: currBrightness == Brightness.dark
+                ? Colors.black54
+                : Colors.blue[100],
             child: IconButton(
               onPressed: () {
                 Navigator.of(context).push(

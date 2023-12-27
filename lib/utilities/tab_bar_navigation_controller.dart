@@ -75,7 +75,9 @@ class _TabBarNavigationControllerState
               _currPage = _pagesList[_bottomNavIndex];
             });
           },
-          backgroundColor: Colors.greenAccent,
+          backgroundColor: currBrightness == Brightness.dark
+              ? Colors.green[400]
+              : Colors.greenAccent,
           splashColor: Colors.cyan[200],
           foregroundColor:
               currBrightness == Brightness.dark ? Colors.white : Colors.black87,

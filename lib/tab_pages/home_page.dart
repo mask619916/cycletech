@@ -1,10 +1,12 @@
+import 'dart:async';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:weather/weather.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:weather/weather.dart';
 
 import '../utilities/conts.dart';
+import '../utilities/quote_generator.dart'; // Import your quote generator
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,11 +18,23 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final WeatherFactory _wf = WeatherFactory(OPENWEATHER_API_KEY);
   Weather? _weather;
+  late String _quoteOfTheDay;
+
+  late Timer _quoteTimer;
 
   @override
   void initState() {
     super.initState();
+    _quoteOfTheDay = ""; // Initialize with an empty string
     _getLocationAndFetchWeather();
+    _setupQuoteTimer();
+    _updateQuoteOfTheDay();
+  }
+
+  void _setupQuoteTimer() {
+    _quoteTimer = Timer.periodic(Duration(days: 1), (_) {
+      _updateQuoteOfTheDay();
+    });
   }
 
   Future<void> _getLocationAndFetchWeather() async {
@@ -32,6 +46,35 @@ class _HomePageState extends State<HomePage> {
         _weather = w;
       });
     });
+  }
+
+  void _updateQuoteOfTheDay() async {
+    String quoteKey = 'quote_of_the_day';
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Check if there's a saved quote
+    String? savedQuote = prefs.getString(quoteKey);
+
+    if (savedQuote != null && savedQuote.isNotEmpty) {
+      // Use the saved quote
+      setState(() {
+        _quoteOfTheDay = savedQuote;
+      });
+    } else {
+      // Generate a new quote and save it
+      String newQuote = getRandomQuote();
+      prefs.setString(quoteKey, newQuote);
+
+      setState(() {
+        _quoteOfTheDay = newQuote;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _quoteTimer.cancel();
+    super.dispose();
   }
 
   @override
@@ -46,10 +89,9 @@ class _HomePageState extends State<HomePage> {
             currBrightness == Brightness.dark ? Colors.white : Colors.black54,
       ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
           children: [
-            // Top more than 1/4 of the screen for weather information
+            // Weather information
             Container(
               height: MediaQuery.of(context).size.height * 0.28,
               color: currBrightness == Brightness.dark
@@ -122,8 +164,7 @@ class _HomePageState extends State<HomePage> {
                                       ? Colors.white
                                       : Colors.black87,
                                 ),
-                              )
-                              // Add more weather details as needed
+                              ),
                             ],
                           ),
                         ),
@@ -135,7 +176,35 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            // Rest of the screen content
+
+            // Quote of the Day
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Quote of the Day',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: currBrightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    _quoteOfTheDay,
+                    style: TextStyle(
+                      color: currBrightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
