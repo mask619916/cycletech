@@ -58,7 +58,7 @@ class _TabBarNavigationControllerState
           _countdownInSeconds--;
         }
 
-        print("${_countdownInSeconds} seconds until quote update check");
+        // print("${_countdownInSeconds} seconds until quote update check");
       },
     );
   }
