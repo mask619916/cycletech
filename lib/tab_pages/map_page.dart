@@ -17,9 +17,10 @@ class _MapPageState extends State<MapPage> {
   final MapController _mapController = MapController();
   late StreamSubscription<Position> _positionStream;
   LatLng _locationCords = LatLng(0, 0);
+  List<LatLng> _points = [];
 
   void _initPositionStream() {
-    int distanceFilterInMeters = 0;
+    int distanceFilterInMeters = 10;
     LocationSettings locationSettings;
 
     if (defaultTargetPlatform == TargetPlatform.android) {
@@ -27,7 +28,7 @@ class _MapPageState extends State<MapPage> {
         accuracy: LocationAccuracy.bestForNavigation,
         distanceFilter: distanceFilterInMeters,
         forceLocationManager: true,
-        intervalDuration: const Duration(seconds: 5),
+        intervalDuration: const Duration(seconds: 1),
         //(Optional) Set foreground notification config to keep the app alive
         //when going to the background
         foregroundNotificationConfig: const ForegroundNotificationConfig(
@@ -65,9 +66,17 @@ class _MapPageState extends State<MapPage> {
         setState(() {
           _locationCords = LatLng(position.latitude, position.longitude);
         });
-        // print(_locationCords);
 
-        _mapController.move(_locationCords, 18);
+        // print(_locationCords);
+        // print(position.heading);
+
+        _mapController.moveAndRotate(
+          _locationCords,
+          18,
+          360 - position.heading,
+        );
+
+        _points.add(_locationCords);
       },
     );
   }
@@ -75,14 +84,13 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    // _getCurrentLocation();
     _initPositionStream();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _positionStream.cancel();
+    super.dispose();
   }
 
   @override
@@ -104,12 +112,29 @@ class _MapPageState extends State<MapPage> {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.cycletech',
                 ),
-                MarkerLayer(markers: [
-                  Marker(
-                    point: _locationCords,
-                    child: FlutterLogo(),
-                  ),
-                ]),
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: _points,
+                      color: Colors.red,
+                      strokeWidth: 10,
+                    ),
+                  ],
+                ),
+                MarkerLayer(
+                  alignment: Alignment.topCenter,
+                  markers: [
+                    Marker(
+                      point: _locationCords,
+                      rotate: true,
+                      child: const Icon(
+                        Icons.navigation_rounded,
+                        color: Colors.blueAccent,
+                        size: 38,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],

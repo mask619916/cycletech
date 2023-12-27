@@ -37,7 +37,7 @@ class _GoPageState extends State<GoPage> {
                   ),
                 );
               },
-              icon: Icon(Icons.gas_meter_outlined, size: 150),
+              icon: Icon(Icons.navigation_sharp, size: 150),
             ),
           ),
         );
