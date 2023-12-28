@@ -11,7 +11,8 @@ import 'package:image_picker/image_picker.dart';
 class AchievementsPage extends StatefulWidget {
   final UserDetails userDetails;
 
-  const AchievementsPage({super.key, required this.userDetails});
+  const AchievementsPage({Key? key, required this.userDetails})
+      : super(key: key);
 
   @override
   State<AchievementsPage> createState() => _AchievementsPageState();
@@ -19,6 +20,92 @@ class AchievementsPage extends StatefulWidget {
 
 class _AchievementsPageState extends State<AchievementsPage> {
   final double _iconSize = 50;
+
+  Future<void> _pickImage(ImageSource source) async {
+    final ImagePicker _picker = ImagePicker();
+    XFile? file;
+
+    try {
+      file = await _picker.pickImage(
+        source: source,
+        imageQuality: 50,
+      );
+    } catch (e) {
+      print('Error picking image: $e');
+    }
+
+    if (file != null) {
+      String fileExtension = file.name!.substring(file.name!.indexOf('.'));
+      String fileName =
+          "${FirebaseAuth.instance.currentUser!.email}_profileAvatar$fileExtension";
+
+      Reference referenceRoot = FirebaseStorage.instance.ref();
+      Reference referenceDirImages = referenceRoot.child('images');
+      Reference referenceImageToUpload = referenceDirImages.child(fileName);
+
+      try {
+        String? imageUrl;
+        await referenceImageToUpload.putFile(File(file.path));
+        imageUrl = await referenceImageToUpload.getDownloadURL();
+
+        // Use setState to trigger a rebuild of the widget
+        setState(() {
+          widget.userDetails.profileAvatarUrl = imageUrl;
+        });
+
+        FirebaseController.createAndUpdateUser(
+          widget.userDetails,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Your avatar has been updated!',
+            ),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'An error has occurred | More Info: $e',
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _showImagePickerOptions() async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.photo_camera),
+              title: Text('Take Photo'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text('Choose from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +135,8 @@ class _AchievementsPageState extends State<AchievementsPage> {
                 child: Row(
                   children: [
                     IconButton(
-                      onPressed: () async {
-                        // Add your image picker logic here
+                      onPressed: () {
+                        _showImagePickerOptions();
                       },
                       icon: CircleAvatar(
                         radius: _iconSize,
