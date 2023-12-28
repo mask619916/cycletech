@@ -65,36 +65,22 @@ class _TabBarNavigationControllerState
 
   void _updateQuoteOfTheDay() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // print("Forcing Update Quote of the Day...");
-
     String quoteKey = 'quote_of_the_day';
 
+    // Always retrieve the quote from local storage
+    String loadedQuote = prefs.getString(quoteKey) ?? "";
+
     DateTime now = DateTime.now();
-    // print("${now.hour}h:${now.minute}m");
     if (now.hour == 8 && now.minute == 0) {
       // Generate a new quote and save it
       String newQuote = getRandomQuote();
       prefs.setString(quoteKey, newQuote);
 
-      // Check if the widget is still mounted
-      if (!mounted) return;
-
-      setState(() {
-        // print("Setting state with new quote: $newQuote");
-        _quoteOfTheDay = newQuote;
-      });
+      // Set the quoteOfTheDay to the new quote
+      _quoteOfTheDay = newQuote;
     } else {
-      // reading quote from local storage
-      String loadedQuote = prefs.getString(quoteKey) ?? "";
-
-      // Check if the widget is still mounted
-      if (!mounted) return;
-
-      setState(() {
-        // print("Setting state with new quote: $loadedQuote");
-        _quoteOfTheDay = loadedQuote;
-      });
+      // Set the quoteOfTheDay to the loaded quote
+      _quoteOfTheDay = loadedQuote;
     }
   }
 

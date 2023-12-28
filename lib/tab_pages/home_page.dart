@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cycletech/globals/globaldata.dart';
+import 'package:cycletech/utilities/quote_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,9 +8,10 @@ import 'package:weather/weather.dart';
 import '../utilities/conts.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key, required this.quoteOfTheDay}) : super(key: key);
+  String quoteOfTheDay;
 
-  final String quoteOfTheDay;
+  // Add a default value for the quoteOfTheDay parameter
+  HomePage({Key? key, this.quoteOfTheDay = ""}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -115,7 +117,27 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.quoteOfTheDay.isEmpty) {
+      // This means it's the first run for a new user
+      _updateQuoteOfTheDay();
+    }
+
     _getLocationAndFetchWeather();
+  }
+
+  void _updateQuoteOfTheDay() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String quoteKey = 'quote_of_the_day';
+
+    // Generate a new quote and save it
+    String newQuote = getRandomQuote();
+    prefs.setString(quoteKey, newQuote);
+
+    // Set the quoteOfTheDay to the new quote
+    setState(() {
+      widget.quoteOfTheDay = newQuote;
+    });
   }
 
   @override
