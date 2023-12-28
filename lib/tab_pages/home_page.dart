@@ -10,7 +10,6 @@ import '../utilities/conts.dart';
 class HomePage extends StatefulWidget {
   String quoteOfTheDay;
 
-  // Add a default value for the quoteOfTheDay parameter
   HomePage({Key? key, this.quoteOfTheDay = ""}) : super(key: key);
 
   @override
@@ -21,7 +20,6 @@ class _HomePageState extends State<HomePage> {
   final WeatherFactory _wf = WeatherFactory(OPENWEATHER_API_KEY);
   Weather? _weather;
 
-  // Weather stuff
   Widget _dateTimeInfo() {
     DateTime now = _weather!.date!;
     return Column(
@@ -152,123 +150,152 @@ class _HomePageState extends State<HomePage> {
             currBrightness == Brightness.dark ? Colors.white : Colors.black54,
       ),
       body: SafeArea(
-        child: ListView(
-          children: [
-            // Weather information
-            Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              color: currBrightness == Brightness.dark
-                  ? Colors.grey[700]
-                  : Colors.blue[300],
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Current Weather',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: currBrightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black87,
-                      fontWeight: FontWeight.bold,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Weather information
+              Container(
+                decoration: BoxDecoration(
+                  color: currBrightness == Brightness.dark
+                      ? Colors.grey[700]
+                      : Colors.blue[300],
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 3,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  if (_weather != null) ...[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Weather icon
-                        _weatherIcon(),
-                        const SizedBox(width: 10),
-                        // Weather details
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Location: ${_weather?.areaName ?? ""}',
-                                style: TextStyle(
-                                  color: currBrightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black87,
-                                ),
-                              ),
-                              _dateTimeInfo(),
-                              Text(
-                                'Temperature: ${_weather!.temperature?.celsius?.toStringAsFixed(0)}°C',
-                                style: TextStyle(
-                                  color: currBrightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black87,
-                                ),
-                              ),
-                              Text(
-                                'Min/Max: ${_weather!.tempMin?.celsius?.toStringAsFixed(0)}°C / ${_weather!.tempMax?.celsius?.toStringAsFixed(0)}°C',
-                                style: TextStyle(
-                                  color: currBrightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black87,
-                                ),
-                              ),
-                              Text(
-                                'Wind Speed: ${_weather?.windSpeed?.toStringAsFixed(0)}m/s',
-                                style: TextStyle(
-                                  color: currBrightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black87,
-                                ),
-                              ),
-                              Text(
-                                'Humidity: ${_weather?.humidity?.toStringAsFixed(0)}%',
-                                style: TextStyle(
-                                  color: currBrightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  ] else ...[
-                    const Center(child: CircularProgressIndicator()),
                   ],
-                ],
+                ),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Current Weather',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: currBrightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    if (_weather != null) ...[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _weatherIcon(),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Location: ${_weather?.areaName ?? ""}',
+                                  style: TextStyle(
+                                    color: currBrightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                                _dateTimeInfo(),
+                                Text(
+                                  'Temperature: ${_weather!.temperature?.celsius?.toStringAsFixed(0)}°C',
+                                  style: TextStyle(
+                                    color: currBrightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  'Min/Max: ${_weather!.tempMin?.celsius?.toStringAsFixed(0)}°C / ${_weather!.tempMax?.celsius?.toStringAsFixed(0)}°C',
+                                  style: TextStyle(
+                                    color: currBrightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  'Wind Speed: ${_weather?.windSpeed?.toStringAsFixed(0)}m/s',
+                                  style: TextStyle(
+                                    color: currBrightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  'Humidity: ${_weather?.humidity?.toStringAsFixed(0)}%',
+                                  style: TextStyle(
+                                    color: currBrightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    ] else ...[
+                      const Center(child: CircularProgressIndicator()),
+                    ],
+                  ],
+                ),
               ),
-            ),
 
-            // Quote of the Day
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Quote of the Day',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: currBrightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black87,
-                      fontWeight: FontWeight.bold,
+              const SizedBox(height: 16),
+
+              // Quote of the Day
+              Container(
+                decoration: BoxDecoration(
+                  color: currBrightness == Brightness.dark
+                      ? Colors.green[700]
+                      : Colors.greenAccent,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 3,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    widget.quoteOfTheDay,
-                    style: TextStyle(
-                      color: currBrightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black87,
+                  ],
+                ),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Quote of the Day',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: currBrightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.quoteOfTheDay,
+                      style: TextStyle(
+                        color: currBrightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
