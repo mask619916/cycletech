@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -125,13 +126,22 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Enjoy your ride!')),
+      appBar: AppBar(
+        title: Text('Enjoy your ride!'),
+        backgroundColor: currBrightness == Brightness.dark
+            ? Colors.black54
+            : Colors.blue[100],
+        foregroundColor:
+            currBrightness == Brightness.dark ? Colors.white : Colors.black54,
+      ),
       body: SlidingUpPanel(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
-        color: Color.fromARGB(255, 16, 16, 16),
+        color: currBrightness == Brightness.dark
+            ? Colors.black
+            : Colors.blue.shade100,
         parallaxEnabled: true,
         parallaxOffset: 0.6,
         minHeight: 120,
