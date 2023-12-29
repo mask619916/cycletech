@@ -3,6 +3,7 @@ import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -15,53 +16,73 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+  Position? initialPos;
   final MapController _mapController = MapController();
   late StreamSubscription<Position> _positionStream;
   LatLng _locationCords = LatLng(0, 0);
   List<LatLng> _points = [];
-  late Timer _timer;
-  late DateTime _startTime;
-  String _formattedTime = '00:00:00';
-  double _speed = 0.0; // in m/s
-  double _distance = 0.0; // in meters
-  double _caloriesBurnt = 0.0;
+  // late DateTime _startTime;
+  // String _formattedTime = '00:00:00';
+  String _speed = '0.0'; // in m/s
+  String _distance = '0.0'; // in meters
+  String _caloriesBurnt = '0.0';
 
-  void _startTimer() {
-    _startTime = DateTime.now();
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      final elapsed = DateTime.now().difference(_startTime);
-      setState(() {
-        _formattedTime = _formatDuration(elapsed);
-      });
-    });
-  }
+  // void _startTimer() {
+  //   _startTime = DateTime.now();
+  //   _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+  //     final elapsed = DateTime.now().difference(_startTime);
+  //     setState(() {
+  //       _formattedTime = _formatDuration(elapsed);
+  //     });
+  //   });
+  // }
 
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return '$hours:$minutes:$seconds';
-  }
+  // String _formatDuration(Duration duration) {
+  //   String twoDigits(int n) => n.toString().padLeft(2, '0');
+  //   final hours = twoDigits(duration.inHours);
+  //   final minutes = twoDigits(duration.inMinutes.remainder(60));
+  //   final seconds = twoDigits(duration.inSeconds.remainder(60));
+  //   return '$hours:$minutes:$seconds';
+  // }
 
   void _updateInformation(Position position) {
-    _speed = position.speed ?? 0.0;
+    _speed = position.speed.toStringAsFixed(2);
 
-    if (_points.isNotEmpty) {
-      final lastPoint = _points.last;
+    print(_points);
+
+    if (_points.length > 1) {
+      final LatLng lastPoint = _points[_points.length - 2];
+
+      print('Last Point: $lastPoint');
+      print('Current Point: ${LatLng(position.latitude, position.longitude)}');
+
       final distance = Geolocator.distanceBetween(
         lastPoint.latitude,
         lastPoint.longitude,
         position.latitude,
         position.longitude,
       );
-      _distance += distance;
+
+      print('Distance: $distance meters');
+
+      if (distance > 0.0) {
+        double tempDistance = double.parse(_distance);
+        tempDistance += distance;
+        _distance = tempDistance.toStringAsFixed(0);
+      }
     }
 
-    _caloriesBurnt = _distance * 0.000621371; // assuming calories per meter
-
-    setState(() {});
+    double tempCal = double.parse(_caloriesBurnt);
+    tempCal = double.parse(_distance) * 0.0035; // assuming calories per meter
+    _caloriesBurnt = tempCal.toStringAsFixed(1);
   }
+
+  // Stopwatch stuff
+  Stopwatch _stopwatch = Stopwatch();
+  late Timer _timer;
+  bool _isRunning = false;
+
+  void _initStartingPos() async {}
 
   void _initPositionStream() {
     int distanceFilterInMeters = 10;
@@ -115,16 +136,60 @@ class _MapPageState extends State<MapPage> {
 
         _points.add(_locationCords);
 
-        if (!_timer.isActive) {
-          _startTimer();
-        }
+        setState(() {
+          _updateInformation(position);
+        });
 
-        _updateInformation(position);
+        // if (!_timer.isActive) {
+        //   _startTimer();
+        // }
+        //
+        // _updateInformation(position);
       },
     );
   }
 
-  Widget displayControls() {
+  // For stopwatch
+  void _updateTimer(Timer timer) {
+    if (_isRunning) {
+      setState(() {
+        // Rebuild the UI every tick to update the stopwatch display
+      });
+    }
+  }
+
+  String _formattedTime() {
+    int hundreds = (_stopwatch.elapsedMilliseconds ~/ 10) % 100;
+    int seconds = (_stopwatch.elapsedMilliseconds ~/ 1000) % 60;
+    int minutes = (_stopwatch.elapsedMilliseconds ~/ (1000 * 60)) % 60;
+    int hours = (_stopwatch.elapsedMilliseconds ~/ (1000 * 60 * 60)) % 24;
+
+    return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${hundreds.toString().padLeft(2, '0')}';
+  }
+
+  void _startStopwatch() {
+    setState(() {
+      _isRunning = true;
+      _stopwatch.start();
+    });
+  }
+
+  void _stopStopwatch() {
+    setState(() {
+      _isRunning = false;
+      _stopwatch.stop();
+    });
+  }
+
+  // Uncomment if required in future
+  // void _resetStopwatch() {
+  //   setState(() {
+  //     _isRunning = true;
+  //     _stopwatch.reset();
+  //   });
+  // }
+
+  Widget _displayControls() {
     return Column(
       children: [
         SizedBox(height: 10),
@@ -133,7 +198,7 @@ class _MapPageState extends State<MapPage> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         Text(
-          _formattedTime,
+          _formattedTime(),
           style: TextStyle(fontSize: 24),
         ),
         SizedBox(height: 10),
@@ -181,21 +246,31 @@ class _MapPageState extends State<MapPage> {
           children: [
             IconButton(
               onPressed: () {
-                _startTimer();
+                setState(() {
+                  if (_positionStream.isPaused) {
+                    _startStopwatch();
+                    _positionStream.resume();
+                  } else {
+                    _stopStopwatch();
+                    _positionStream.pause();
+                  }
+                });
               },
               icon: Icon(
-                Icons.play_circle_fill_rounded,
+                _positionStream.isPaused
+                    ? Icons.play_circle_filled_rounded
+                    : Icons.pause_circle_filled_rounded,
                 size: 70,
-                color: Colors.green,
+                color: _positionStream.isPaused ? Colors.green : Colors.yellow,
               ),
             ),
             IconButton(
               onPressed: () {
-                _timer.cancel();
+                // TODO: when user finishes the ride
               },
               icon: Icon(
-                Icons.stop_circle_rounded,
-                size: 70,
+                FontAwesomeIcons.flagCheckered,
+                size: 50,
                 color: Colors.red,
               ),
             ),
@@ -209,11 +284,15 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
     _initPositionStream();
+    _timer = Timer.periodic(Duration(milliseconds: 30), _updateTimer);
+    _positionStream.pause();
   }
 
   @override
   void dispose() {
     _positionStream.cancel();
+    _stopwatch.stop();
+    _timer.cancel();
     super.dispose();
   }
 
@@ -238,14 +317,14 @@ class _MapPageState extends State<MapPage> {
             : Colors.blue.shade100,
         parallaxEnabled: true,
         parallaxOffset: 0.6,
-        minHeight: 120,
-        panel: displayControls(),
+        minHeight: 250,
+        panel: _displayControls(),
         body: Stack(
           children: [
             FlutterMap(
               mapController: _mapController,
               options: MapOptions(
-                initialCenter: LatLng(25.948767, 50.567386),
+                initialCenter: LatLng(25.848767, 50.567386),
                 initialZoom: 10,
               ),
               children: [
