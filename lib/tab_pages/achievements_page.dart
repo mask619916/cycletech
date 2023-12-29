@@ -197,7 +197,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                       contentPadding: EdgeInsets.all(10),
                       leading: FaIcon(FontAwesomeIcons.anchor),
                       title: Text(
-                          "To unlock this achievement complete 10km of bicycle riding."),
+                          "To unlock this achievement complete 10000 meters of bicycle riding."),
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.all(10),
@@ -215,7 +215,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                       contentPadding: EdgeInsets.all(10),
                       leading: FaIcon(FontAwesomeIcons.meteor),
                       title: Text(
-                          "To unlock this achievement complete 2km bicycle ride in less than 2 hours."),
+                          "To unlock this achievement complete 2000 meters bicycle ride in less than 2 hours."),
                     ),
                     ListTile(
                       contentPadding: EdgeInsets.all(10),

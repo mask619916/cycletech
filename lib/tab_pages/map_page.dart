@@ -202,46 +202,51 @@ class _MapPageState extends State<MapPage> {
           _formattedTime(),
           style: TextStyle(fontSize: 24),
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 20),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Column(
-              children: [
-                Icon(
-                  Icons.speed,
-                  size: 30,
-                  color: Colors.blue,
-                ),
-                Text('Speed'),
-                Text('$_speed m/s'),
-              ],
+            Expanded(
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.speed,
+                    size: 30,
+                    color: Colors.blue,
+                  ),
+                  Text('Speed'),
+                  Text('$_speed m/s'),
+                ],
+              ),
             ),
-            Column(
-              children: [
-                Icon(
-                  Icons.directions_walk,
-                  size: 30,
-                  color: Colors.orange,
-                ),
-                Text('Distance'),
-                Text('$_distance meters'),
-              ],
+            Expanded(
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.directions_walk,
+                    size: 30,
+                    color: Colors.orange,
+                  ),
+                  Text('Distance'),
+                  Text('$_distance meters'),
+                ],
+              ),
             ),
-            Column(
-              children: [
-                Icon(
-                  Icons.local_fire_department,
-                  size: 30,
-                  color: Colors.red,
-                ),
-                Text('Calories Burnt'),
-                Text('$_caloriesBurnt'),
-              ],
+            Expanded(
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.local_fire_department,
+                    size: 30,
+                    color: Colors.red,
+                  ),
+                  Text('Calories Burnt'),
+                  Text('$_caloriesBurnt'),
+                ],
+              ),
             ),
           ],
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -271,7 +276,7 @@ class _MapPageState extends State<MapPage> {
                       setState(() => _isFinished = true);
                       _mapController.fitCamera(CameraFit.coordinates(
                         coordinates: _points,
-                        maxZoom: 12,
+                        maxZoom: 16,
                       ));
 
                       // todo: upload
@@ -330,7 +335,7 @@ class _MapPageState extends State<MapPage> {
             : Colors.blue.shade100,
         parallaxEnabled: true,
         parallaxOffset: 0.6,
-        minHeight: 250,
+        minHeight: 275,
         panel: _displayControls(),
         body: Stack(
           children: [
