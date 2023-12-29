@@ -21,8 +21,8 @@ class _MapPageState extends State<MapPage> {
   late StreamSubscription<Position> _positionStream;
   LatLng _locationCords = LatLng(0, 0);
   List<LatLng> _points = [];
-  // late DateTime _startTime;
-  // String _formattedTime = '00:00:00';
+  bool _isFinished = false;
+  String _timeElapsed = '';
   String _speed = '0.0'; // in m/s
   String _distance = '0.0'; // in meters
   String _caloriesBurnt = '0.0';
@@ -81,8 +81,6 @@ class _MapPageState extends State<MapPage> {
   Stopwatch _stopwatch = Stopwatch();
   late Timer _timer;
   bool _isRunning = false;
-
-  void _initStartingPos() async {}
 
   void _initPositionStream() {
     int distanceFilterInMeters = 10;
@@ -164,7 +162,10 @@ class _MapPageState extends State<MapPage> {
     int minutes = (_stopwatch.elapsedMilliseconds ~/ (1000 * 60)) % 60;
     int hours = (_stopwatch.elapsedMilliseconds ~/ (1000 * 60 * 60)) % 24;
 
-    return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${hundreds.toString().padLeft(2, '0')}';
+    _timeElapsed =
+        '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}.${hundreds.toString().padLeft(2, '0')}';
+
+    return _timeElapsed;
   }
 
   void _startStopwatch() {
@@ -264,16 +265,28 @@ class _MapPageState extends State<MapPage> {
                 color: _positionStream.isPaused ? Colors.green : Colors.yellow,
               ),
             ),
-            IconButton(
-              onPressed: () {
-                // TODO: when user finishes the ride
-              },
-              icon: Icon(
-                FontAwesomeIcons.flagCheckered,
-                size: 50,
-                color: Colors.red,
-              ),
-            ),
+            _positionStream.isPaused && double.parse(_distance) > 20
+                ? IconButton(
+                    onPressed: () {
+                      setState(() => _isFinished = true);
+                      _mapController.fitCamera(CameraFit.coordinates(
+                        coordinates: _points,
+                        maxZoom: 12,
+                      ));
+
+                      // todo: upload
+                      print(_distance);
+                      print(_caloriesBurnt);
+                      print(_points);
+                      print(_timeElapsed);
+                    },
+                    icon: Icon(
+                      FontAwesomeIcons.flagCheckered,
+                      size: 50,
+                      color: Colors.red,
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ],
@@ -336,25 +349,59 @@ class _MapPageState extends State<MapPage> {
                   polylines: [
                     Polyline(
                       points: _points,
-                      color: Colors.red,
+                      color: Colors.blueGrey,
                       strokeWidth: 10,
                     ),
                   ],
                 ),
-                MarkerLayer(
-                  alignment: Alignment.topCenter,
-                  markers: [
-                    Marker(
-                      point: _locationCords,
-                      rotate: true,
-                      child: const Icon(
-                        Icons.navigation_rounded,
-                        color: Colors.blueAccent,
-                        size: 38,
+                _isFinished
+                    ? Container()
+                    : MarkerLayer(
+                        alignment: Alignment.topCenter,
+                        markers: [
+                          Marker(
+                            point: _locationCords,
+                            rotate: true,
+                            child: const Icon(
+                              Icons.navigation_rounded,
+                              color: Colors.blueAccent,
+                              size: 38,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
+                _isFinished
+                    ? MarkerLayer(
+                        alignment: Alignment.topCenter,
+                        markers: [
+                          Marker(
+                            point: _points.first,
+                            rotate: true,
+                            child: const Icon(
+                              Icons.pin_drop,
+                              color: Colors.green,
+                              size: 38,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
+                _isFinished
+                    ? MarkerLayer(
+                        alignment: Alignment.topCenter,
+                        markers: [
+                          Marker(
+                            point: _points.last,
+                            rotate: true,
+                            child: const Icon(
+                              Icons.pin_drop,
+                              color: Colors.red,
+                              size: 38,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
               ],
             ),
           ],
