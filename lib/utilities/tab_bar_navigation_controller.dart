@@ -123,7 +123,7 @@ class _TabBarNavigationControllerState
           });
         },
       ),
-      const GoPage(),
+      GoPage(userDetails: _userDetails),
     ];
 
     return Scaffold(

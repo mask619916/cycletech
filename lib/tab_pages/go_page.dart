@@ -1,10 +1,13 @@
 import 'package:cycletech/globals/globaldata.dart';
+import 'package:cycletech/models/user_details.dart';
 import 'package:cycletech/tab_pages/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class GoPage extends StatefulWidget {
-  const GoPage({super.key});
+  const GoPage({super.key, required this.userDetails});
+
+  final UserDetails userDetails;
 
   @override
   State<GoPage> createState() => _GoPageState();
@@ -33,7 +36,8 @@ class _GoPageState extends State<GoPage> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const MapPage(),
+                    builder: (context) =>
+                        MapPage(userDetails: widget.userDetails),
                   ),
                 );
               },

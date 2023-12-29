@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cycletech/globals/globaldata.dart';
+import 'package:cycletech/models/user_details.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -9,7 +11,9 @@ import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+  const MapPage({super.key, required this.userDetails});
+
+  final UserDetails userDetails;
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -27,34 +31,16 @@ class _MapPageState extends State<MapPage> {
   String _distance = '0.0'; // in meters
   String _caloriesBurnt = '0.0';
 
-  // void _startTimer() {
-  //   _startTime = DateTime.now();
-  //   _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-  //     final elapsed = DateTime.now().difference(_startTime);
-  //     setState(() {
-  //       _formattedTime = _formatDuration(elapsed);
-  //     });
-  //   });
-  // }
-
-  // String _formatDuration(Duration duration) {
-  //   String twoDigits(int n) => n.toString().padLeft(2, '0');
-  //   final hours = twoDigits(duration.inHours);
-  //   final minutes = twoDigits(duration.inMinutes.remainder(60));
-  //   final seconds = twoDigits(duration.inSeconds.remainder(60));
-  //   return '$hours:$minutes:$seconds';
-  // }
-
   void _updateInformation(Position position) {
     _speed = position.speed.toStringAsFixed(2);
 
-    print(_points);
+    // print(_points);
 
     if (_points.length > 1) {
       final LatLng lastPoint = _points[_points.length - 2];
 
-      print('Last Point: $lastPoint');
-      print('Current Point: ${LatLng(position.latitude, position.longitude)}');
+      // print('Last Point: $lastPoint');
+      // print('Current Point: ${LatLng(position.latitude, position.longitude)}');
 
       final distance = Geolocator.distanceBetween(
         lastPoint.latitude,
@@ -63,7 +49,7 @@ class _MapPageState extends State<MapPage> {
         position.longitude,
       );
 
-      print('Distance: $distance meters');
+      // print('Distance: $distance meters');
 
       if (distance > 0.0) {
         double tempDistance = double.parse(_distance);
@@ -137,12 +123,6 @@ class _MapPageState extends State<MapPage> {
         setState(() {
           _updateInformation(position);
         });
-
-        // if (!_timer.isActive) {
-        //   _startTimer();
-        // }
-        //
-        // _updateInformation(position);
       },
     );
   }
@@ -247,53 +227,79 @@ class _MapPageState extends State<MapPage> {
           ],
         ),
         SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  if (_positionStream.isPaused) {
-                    _startStopwatch();
-                    _positionStream.resume();
-                  } else {
-                    _stopStopwatch();
-                    _positionStream.pause();
-                  }
-                });
-              },
-              icon: Icon(
-                _positionStream.isPaused
-                    ? Icons.play_circle_filled_rounded
-                    : Icons.pause_circle_filled_rounded,
-                size: 70,
-                color: _positionStream.isPaused ? Colors.green : Colors.yellow,
-              ),
-            ),
-            _positionStream.isPaused && double.parse(_distance) > 20
-                ? IconButton(
+        _isFinished
+            ? Container()
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
                     onPressed: () {
-                      setState(() => _isFinished = true);
-                      _mapController.fitCamera(CameraFit.coordinates(
-                        coordinates: _points,
-                        maxZoom: 16,
-                      ));
-
-                      // todo: upload
-                      print(_distance);
-                      print(_caloriesBurnt);
-                      print(_points);
-                      print(_timeElapsed);
+                      setState(() {
+                        if (_positionStream.isPaused) {
+                          _startStopwatch();
+                          _positionStream.resume();
+                        } else {
+                          _stopStopwatch();
+                          _positionStream.pause();
+                        }
+                      });
                     },
                     icon: Icon(
-                      FontAwesomeIcons.flagCheckered,
-                      size: 50,
-                      color: Colors.red,
+                      _positionStream.isPaused
+                          ? Icons.play_circle_filled_rounded
+                          : Icons.pause_circle_filled_rounded,
+                      size: 70,
+                      color: _positionStream.isPaused
+                          ? Colors.green
+                          : Colors.yellow,
                     ),
-                  )
-                : Container(),
-          ],
-        ),
+                  ),
+                  _positionStream.isPaused && double.parse(_distance) > 20
+                      ? IconButton(
+                          onPressed: () {
+                            setState(() => _isFinished = true);
+                            _mapController.fitCamera(CameraFit.coordinates(
+                              coordinates: _points,
+                              maxZoom: 16,
+                            ));
+
+                            // print(_distance);
+                            // print(_caloriesBurnt);
+                            // print(_points);
+                            // print(_timeElapsed);
+
+                            final collectionRef = FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(widget.userDetails.email)
+                                .collection('trackedRides');
+
+                            final List<GeoPoint> tempPointsList = [];
+                            for (int i = 0; i < _points.length; i++) {
+                              tempPointsList.add(GeoPoint(
+                                  _points[i].latitude, _points[i].longitude));
+                            }
+
+                            collectionRef
+                                .add({
+                                  'calories': _caloriesBurnt,
+                                  'distance': _distance,
+                                  'timeElapsed': _timeElapsed,
+                                  'coordinates': tempPointsList,
+                                })
+                                .then((value) =>
+                                    debugPrint('Ride has been uploaded.'))
+                                .onError((error, stackTrace) => debugPrint(
+                                    'An error occurred while uploading ride statistics.'));
+                          },
+                          icon: Icon(
+                            FontAwesomeIcons.flagCheckered,
+                            size: 50,
+                            color: Colors.red,
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
       ],
     );
   }
@@ -335,7 +341,7 @@ class _MapPageState extends State<MapPage> {
             : Colors.blue.shade100,
         parallaxEnabled: true,
         parallaxOffset: 0.6,
-        minHeight: 275,
+        minHeight: _isFinished ? 180 : 275,
         panel: _displayControls(),
         body: Stack(
           children: [
