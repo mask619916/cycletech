@@ -19,6 +19,49 @@ class _MapPageState extends State<MapPage> {
   late StreamSubscription<Position> _positionStream;
   LatLng _locationCords = LatLng(0, 0);
   List<LatLng> _points = [];
+  late Timer _timer;
+  late DateTime _startTime;
+  String _formattedTime = '00:00:00';
+  double _speed = 0.0; // in m/s
+  double _distance = 0.0; // in meters
+  double _caloriesBurnt = 0.0;
+
+  void _startTimer() {
+    _startTime = DateTime.now();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      final elapsed = DateTime.now().difference(_startTime);
+      setState(() {
+        _formattedTime = _formatDuration(elapsed);
+      });
+    });
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$hours:$minutes:$seconds';
+  }
+
+  void _updateInformation(Position position) {
+    _speed = position.speed ?? 0.0;
+
+    if (_points.isNotEmpty) {
+      final lastPoint = _points.last;
+      final distance = Geolocator.distanceBetween(
+        lastPoint.latitude,
+        lastPoint.longitude,
+        position.latitude,
+        position.longitude,
+      );
+      _distance += distance;
+    }
+
+    _caloriesBurnt = _distance * 0.000621371; // assuming calories per meter
+
+    setState(() {});
+  }
 
   void _initPositionStream() {
     int distanceFilterInMeters = 10;
@@ -30,8 +73,6 @@ class _MapPageState extends State<MapPage> {
         distanceFilter: distanceFilterInMeters,
         forceLocationManager: true,
         intervalDuration: const Duration(seconds: 1),
-        //(Optional) Set foreground notification config to keep the app alive
-        //when going to the background
         foregroundNotificationConfig: const ForegroundNotificationConfig(
           notificationText:
               "CycleTech will continue to receive your location even when you aren't using it",
@@ -46,7 +87,6 @@ class _MapPageState extends State<MapPage> {
         activityType: ActivityType.fitness,
         distanceFilter: distanceFilterInMeters,
         pauseLocationUpdatesAutomatically: true,
-        // Only set to true if our app will be started up in the background.
         showBackgroundLocationIndicator: true,
       );
     } else {
@@ -60,16 +100,12 @@ class _MapPageState extends State<MapPage> {
         Geolocator.getPositionStream(locationSettings: locationSettings).listen(
       (Position? position) {
         if (position == null) {
-          // print('Location not found');
           return;
         }
 
         setState(() {
           _locationCords = LatLng(position.latitude, position.longitude);
         });
-
-        // print(_locationCords);
-        // print(position.heading);
 
         _mapController.moveAndRotate(
           _locationCords,
@@ -78,6 +114,12 @@ class _MapPageState extends State<MapPage> {
         );
 
         _points.add(_locationCords);
+
+        if (!_timer.isActive) {
+          _startTimer();
+        }
+
+        _updateInformation(position);
       },
     );
   }
@@ -86,11 +128,61 @@ class _MapPageState extends State<MapPage> {
     return Column(
       children: [
         SizedBox(height: 10),
-        Text('00h:00m:00s'),
+        Text(
+          'Time Elapsed',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          _formattedTime,
+          style: TextStyle(fontSize: 24),
+        ),
+        SizedBox(height: 10),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Column(
+              children: [
+                Icon(
+                  Icons.speed,
+                  size: 30,
+                  color: Colors.blue,
+                ),
+                Text('Speed'),
+                Text('$_speed m/s'),
+              ],
+            ),
+            Column(
+              children: [
+                Icon(
+                  Icons.directions_walk,
+                  size: 30,
+                  color: Colors.orange,
+                ),
+                Text('Distance'),
+                Text('$_distance meters'),
+              ],
+            ),
+            Column(
+              children: [
+                Icon(
+                  Icons.local_fire_department,
+                  size: 30,
+                  color: Colors.red,
+                ),
+                Text('Calories Burnt'),
+                Text('$_caloriesBurnt'),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                _startTimer();
+              },
               icon: Icon(
                 Icons.play_circle_fill_rounded,
                 size: 70,
@@ -98,11 +190,13 @@ class _MapPageState extends State<MapPage> {
               ),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                _timer.cancel();
+              },
               icon: Icon(
-                Icons.play_circle_fill_rounded,
+                Icons.stop_circle_rounded,
                 size: 70,
-                color: Colors.green,
+                color: Colors.red,
               ),
             ),
           ],
