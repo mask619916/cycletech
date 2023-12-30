@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
 import '../utilities/conts.dart';
 
+// ignore: must_be_immutable
 class HomePage extends StatefulWidget {
   String quoteOfTheDay;
 

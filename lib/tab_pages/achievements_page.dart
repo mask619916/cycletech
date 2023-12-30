@@ -19,8 +19,8 @@ class AchievementsPage extends StatefulWidget {
 }
 
 class _AchievementsPageState extends State<AchievementsPage> {
-  final double _iconSize = 25; // Adjust the icon size as needed
-  final double _imageIconSize = 50; // Adjust the image icon size as needed
+  final double _iconSize = 25;
+  final double _imageIconSize = 50;
 
   // Define the colors for achieved and not achieved icons
   final Color _achievedColor = Colors.green;
@@ -110,16 +110,24 @@ class _AchievementsPageState extends State<AchievementsPage> {
                         ),
                       ),
                       const SizedBox(width: 30),
+                      // Updated part to have first name, last name, and age on the same line
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            widget.userDetails.fName ?? "",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            widget.userDetails.lName ?? "",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          Row(
+                            children: [
+                              Text(
+                                widget.userDetails.fName ?? "",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(width: 8), // Adjust as needed
+                              Text(
+                                widget.userDetails.lName ?? "",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           ),
                           Text(
                             widget.userDetails.gender ?? "",
