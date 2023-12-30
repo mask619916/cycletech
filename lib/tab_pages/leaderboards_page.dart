@@ -73,7 +73,6 @@ class LeaderboardTab extends StatelessWidget {
                   DateTime(today.year, today.month, today.day + 1).toUtc())
           .get();
     } else if (period == 'Weekly') {
-      // Adjust this logic based on how you define a "week" in your app
       var weekStart = today.subtract(Duration(days: today.weekday - 1));
       var weekEnd = weekStart.add(Duration(days: 7));
 
@@ -82,7 +81,6 @@ class LeaderboardTab extends StatelessWidget {
           .where('date', isLessThan: weekEnd.toUtc())
           .get();
     } else {
-      // 'All Time': Retrieve all rides without date filtering
       ridesForPeriod = await trackedRidesCollection.get();
     }
 
@@ -109,7 +107,6 @@ class LeaderboardTab extends StatelessWidget {
         }
 
         if (snapshot.hasError) {
-          print('Error in user stream: ${snapshot.error}');
           return Text('Error: ${snapshot.error}');
         }
 
@@ -123,7 +120,6 @@ class LeaderboardTab extends StatelessWidget {
             var userData = usersSnapshot.data;
 
             if (userData == null) {
-              // Return some default widget or message when userData is null
               return Text('No data available');
             }
 
@@ -135,15 +131,9 @@ class LeaderboardTab extends StatelessWidget {
                   return Center(child: CircularProgressIndicator());
                 }
 
-                if (distancesSnapshot.hasError) {
-                  print('Error fetching distances: ${distancesSnapshot.error}');
-                  return Text('Error: ${distancesSnapshot.error}');
-                }
-
                 var distances = distancesSnapshot.data;
 
                 if (distances == null) {
-                  // Return some default widget or message when distances is null
                   return Text('No data available');
                 }
 
@@ -165,22 +155,33 @@ class LeaderboardTab extends StatelessWidget {
                     var user = combinedData[index]['user'];
                     var distance = combinedData[index]['distance'];
 
+                    var userMap =
+                        (user as QueryDocumentSnapshot<Map<String, dynamic>>)
+                            .data();
+                    var isPrivate = userMap?['isPrivate'] as bool? ?? false;
+
+                    var fName = isPrivate
+                        ? 'Anonymous'
+                        : (userMap?['fName'] as String?);
+                    var lName = isPrivate ? '' : (userMap?['lName'] as String?);
+
+                    fName ??= '';
+                    lName ??= '';
+
                     IconData? prefixIcon;
                     if (index == 0) {
-                      prefixIcon = Icons.star; // First place
+                      prefixIcon = Icons.star;
                     } else if (index == 1) {
-                      prefixIcon = Icons.star_half; // Second place
+                      prefixIcon = Icons.star_half;
                     } else if (index == 2) {
-                      prefixIcon = Icons.star_border; // Third place
+                      prefixIcon = Icons.star_border;
                     }
 
                     return ListTile(
                       leading: prefixIcon != null
                           ? Icon(prefixIcon, color: Colors.amber)
-                          : null, // Show icon only for the top three places
-                      title: Text(
-                        '${(user as QueryDocumentSnapshot<Map<String, dynamic>>).data()?['fName'] ?? ''} ${(user as QueryDocumentSnapshot<Map<String, dynamic>>).data()?['lName'] ?? ''}',
-                      ),
+                          : null,
+                      title: Text('$fName $lName'),
                       subtitle: Text('Distance: $distance meters'),
                     );
                   },
@@ -209,7 +210,6 @@ class LeaderboardTab extends StatelessWidget {
                   DateTime(today.year, today.month, today.day + 1).toUtc())
           .get();
     } else if (title == 'Weekly') {
-      // Adjust this logic based on how you define a "week" in your app
       var weekStart = today.subtract(Duration(days: today.weekday - 1));
       var weekEnd = weekStart.add(Duration(days: 7));
 
@@ -218,7 +218,6 @@ class LeaderboardTab extends StatelessWidget {
           .where('date', isLessThan: weekEnd.toUtc())
           .get();
     } else {
-      // 'All Time': Retrieve all rides without date filtering
       rides = await trackedRidesCollection.get();
     }
 
@@ -227,14 +226,13 @@ class LeaderboardTab extends StatelessWidget {
       if (distance is num) {
         return distance.toDouble();
       } else if (distance is String) {
-        // Try to parse the string as a double
         try {
           return double.parse(distance);
         } catch (e) {
-          return 0.0; // Default value if parsing fails
+          return 0.0;
         }
       }
-      return 0.0; // Default value if 'distance' is not a num or String
+      return 0.0;
     }).toList();
 
     return distances.isEmpty
