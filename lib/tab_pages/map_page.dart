@@ -42,7 +42,6 @@ class _MapPageState extends State<MapPage> {
       // Call the function from the AchievementHelper class
       AchievementHelper.checkAndUpdateAchievements(
         userEmail: widget.userDetails.email!,
-        coordinates: geoPoints,
       );
     } catch (e) {
       print('Error checking and updating achievements: $e');
@@ -274,7 +273,7 @@ class _MapPageState extends State<MapPage> {
                   ),
                   _positionStream.isPaused && double.parse(_distance) > 20
                       ? IconButton(
-                          onPressed: () {
+                          onPressed: () async {
                             setState(() => _isFinished = true);
                             _mapController.fitCamera(CameraFit.coordinates(
                               coordinates: _points,
@@ -282,7 +281,33 @@ class _MapPageState extends State<MapPage> {
                             ));
 
                             // Call the function to check and update achievements
-                            _checkAndUpdateAchievements();
+                            await AchievementHelper.checkAndUpdateAchievements(
+                              userEmail: widget.userDetails.email!,
+                            );
+
+                            // Call the new function to check and update the Sun achievement
+                            await AchievementHelper
+                                .checkAndUpdateSunAchievement(
+                              userEmail: widget.userDetails.email!,
+                            );
+
+                            // Call the new function to check and update the Meteor achievement
+                            await AchievementHelper
+                                .checkAndUpdateMeteorAchievement(
+                              userEmail: widget.userDetails.email!,
+                            );
+
+                            // Call the new function to check and update the Hand Holding Heart achievement
+                            await AchievementHelper
+                                .checkAndUpdateHandHoldingHeartAchievement(
+                              userEmail: widget.userDetails.email!,
+                            );
+
+                            // Call the new function to check and update the Award achievement
+                            await AchievementHelper
+                                .checkAndUpdateAwardAchievement(
+                              userEmail: widget.userDetails.email!,
+                            );
 
                             final collectionRef = FirebaseFirestore.instance
                                 .collection('users')

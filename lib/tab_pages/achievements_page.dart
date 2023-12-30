@@ -167,7 +167,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                       _buildAchievementTile('meteor',
                           'To unlock this achievement complete 2000 meters bicycle ride in less than 2 hours.'),
                       _buildAchievementTile('handHoldingHeart',
-                          'To unlock this achievement log in for 30 days.'),
+                          'To unlock this achievement have a cycling ride for 4 hours continuously.'),
                       _buildAchievementTile(
                           'award', 'Complete all Achievements'),
                     ],
