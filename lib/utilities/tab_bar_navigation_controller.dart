@@ -122,6 +122,7 @@ class _TabBarNavigationControllerState
             _bottomNavIndex = 3 % _pagesList.length;
           });
         },
+        userDetails: _userDetails,
       ),
       GoPage(userDetails: _userDetails),
     ];

@@ -35,7 +35,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
     }
 
     if (file != null) {
-      String fileExtension = file.name!.substring(file.name!.indexOf('.'));
+      String fileExtension = file.name.substring(file.name.indexOf('.'));
       String fileName =
           "${FirebaseAuth.instance.currentUser!.email}_profileAvatar$fileExtension";
 
@@ -124,114 +124,117 @@ class _AchievementsPageState extends State<AchievementsPage> {
           ),
         ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        _showImagePickerOptions();
-                      },
-                      icon: CircleAvatar(
-                        radius: _iconSize,
-                        backgroundImage:
-                            widget.userDetails.profileAvatarUrl == null ||
-                                    widget.userDetails.profileAvatarUrl == ''
-                                ? null
-                                : NetworkImage(
-                                    widget.userDetails.profileAvatarUrl!,
-                                  ),
-                        child: widget.userDetails.profileAvatarUrl == null ||
-                                widget.userDetails.profileAvatarUrl == ''
-                            ? Icon(Icons.person_2_outlined, size: _iconSize)
-                            : null,
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 50),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          _showImagePickerOptions();
+                        },
+                        icon: CircleAvatar(
+                          radius: _iconSize,
+                          backgroundImage:
+                              widget.userDetails.profileAvatarUrl == null ||
+                                      widget.userDetails.profileAvatarUrl == ''
+                                  ? null
+                                  : NetworkImage(
+                                      widget.userDetails.profileAvatarUrl!,
+                                    ),
+                          child: widget.userDetails.profileAvatarUrl == null ||
+                                  widget.userDetails.profileAvatarUrl == ''
+                              ? Icon(Icons.person_2_outlined, size: _iconSize)
+                              : null,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 30),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.userDetails.fName ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          widget.userDetails.lName ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          widget.userDetails.gender ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Text(
-                  "Achievements",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                      const SizedBox(width: 30),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.userDetails.fName ?? "",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            widget.userDetails.lName ?? "",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            widget.userDetails.gender ?? "",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                 ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(10),
+                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    "Achievements",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    ListTile(
-                      contentPadding: EdgeInsets.all(10),
-                      leading: FaIcon(FontAwesomeIcons.anchor),
-                      title: Text(
-                          "To unlock this achievement complete 10000 meters of bicycle riding."),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.all(10),
-                      leading: FaIcon(FontAwesomeIcons.handFist),
-                      title: Text(
-                          "To unlock this achievement go on 6 different cycling explorations."),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.all(10),
-                      leading: FaIcon(FontAwesomeIcons.sun),
-                      title: Text(
-                          "To unlock this achievement go on a bicycle ride early in the morning."),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.all(10),
-                      leading: FaIcon(FontAwesomeIcons.meteor),
-                      title: Text(
-                          "To unlock this achievement complete 2000 meters bicycle ride in less than 2 hours."),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.all(10),
-                      leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
-                      title: Text(
-                          "To unlock this achievement log in for 30 days."),
-                    ),
-                    ListTile(
-                      contentPadding: EdgeInsets.all(10),
-                      leading: FaIcon(FontAwesomeIcons.award),
-                      title: Text("Complete all Achievements"),
-                    ),
-                  ],
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      ListTile(
+                        contentPadding: EdgeInsets.all(10),
+                        leading: FaIcon(FontAwesomeIcons.anchor),
+                        title: Text(
+                            "To unlock this achievement complete 10000 meters of bicycle riding."),
+                      ),
+                      ListTile(
+                        contentPadding: EdgeInsets.all(10),
+                        leading: FaIcon(FontAwesomeIcons.handFist),
+                        title: Text(
+                            "To unlock this achievement go on 6 different cycling explorations."),
+                      ),
+                      ListTile(
+                        contentPadding: EdgeInsets.all(10),
+                        leading: FaIcon(FontAwesomeIcons.sun),
+                        title: Text(
+                            "To unlock this achievement go on a bicycle ride early in the morning."),
+                      ),
+                      ListTile(
+                        contentPadding: EdgeInsets.all(10),
+                        leading: FaIcon(FontAwesomeIcons.meteor),
+                        title: Text(
+                            "To unlock this achievement complete 2000 meters bicycle ride in less than 2 hours."),
+                      ),
+                      ListTile(
+                        contentPadding: EdgeInsets.all(10),
+                        leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
+                        title: Text(
+                            "To unlock this achievement log in for 30 days."),
+                      ),
+                      ListTile(
+                        contentPadding: EdgeInsets.all(10),
+                        leading: FaIcon(FontAwesomeIcons.award),
+                        title: Text("Complete all Achievements"),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -61,6 +61,15 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
         height: int.parse(_controllerHeight.text),
         gender: selectedGender,
         dob: Timestamp.fromDate(DateTime.parse(_controllerDob.text)),
+        isPrivate: false,
+        achievements: {
+          'anchor': false,
+          'award': false,
+          'handFist': false,
+          'handHoldingHeart': false,
+          'meteor': false,
+          'sun': false,
+        },
       );
       FirebaseController.createAndUpdateUser(ud);
     } on FirebaseAuthException catch (e) {

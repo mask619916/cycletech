@@ -1,15 +1,19 @@
-// SettingsPage
-
 import 'package:cycletech/components/sign_out_button.dart';
 import 'package:cycletech/globals/globaldata.dart';
+import 'package:cycletech/models/user_details.dart';
+import 'package:cycletech/utilities/firebase_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   final Function(bool) onDarkModeChanged;
+  final UserDetails userDetails;
 
-  const SettingsPage({Key? key, required this.onDarkModeChanged})
-      : super(key: key);
+  const SettingsPage({
+    Key? key,
+    required this.onDarkModeChanged,
+    required this.userDetails,
+  }) : super(key: key);
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -42,6 +46,21 @@ class _SettingsPageState extends State<SettingsPage> {
     await prefs.setBool('public', _isPublic);
     await prefs.setString('location', _selectedLocation);
     widget.onDarkModeChanged(_isDarkMode);
+
+    // firebase
+    UserDetails ud = UserDetails(
+      email: widget.userDetails.email,
+      fName: widget.userDetails.fName,
+      lName: widget.userDetails.lName,
+      weight: widget.userDetails.weight,
+      height: widget.userDetails.height,
+      gender: widget.userDetails.gender,
+      dob: widget.userDetails.dob,
+      achievements: widget.userDetails.achievements,
+      profileAvatarUrl: widget.userDetails.profileAvatarUrl,
+      isPrivate: _isPublic,
+    );
+    FirebaseController.createAndUpdateUser(ud);
   }
 
   @override

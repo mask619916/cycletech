@@ -267,6 +267,7 @@ class _MapPageState extends State<MapPage> {
                             // print(_caloriesBurnt);
                             // print(_points);
                             // print(_timeElapsed);
+                            // print(DateTime.now());
 
                             final collectionRef = FirebaseFirestore.instance
                                 .collection('users')
@@ -275,8 +276,12 @@ class _MapPageState extends State<MapPage> {
 
                             final List<GeoPoint> tempPointsList = [];
                             for (int i = 0; i < _points.length; i++) {
-                              tempPointsList.add(GeoPoint(
-                                  _points[i].latitude, _points[i].longitude));
+                              tempPointsList.add(
+                                GeoPoint(
+                                  _points[i].latitude,
+                                  _points[i].longitude,
+                                ),
+                              );
                             }
 
                             collectionRef
@@ -285,6 +290,7 @@ class _MapPageState extends State<MapPage> {
                                   'distance': _distance,
                                   'timeElapsed': _timeElapsed,
                                   'coordinates': tempPointsList,
+                                  'date': Timestamp.now(),
                                 })
                                 .then((value) =>
                                     debugPrint('Ride has been uploaded.'))

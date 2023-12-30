@@ -11,6 +11,7 @@ class UserDetails {
   String? fName;
   String? lName;
   String? profileAvatarUrl;
+  bool? isPrivate;
 
   UserDetails({
     this.email,
@@ -23,6 +24,7 @@ class UserDetails {
     this.fName,
     this.lName,
     this.profileAvatarUrl,
+    this.isPrivate,
   });
 
   Map<String, dynamic> toMap() {
@@ -36,6 +38,7 @@ class UserDetails {
       "fName": fName,
       "lName": lName,
       "profileAvatarUrl": profileAvatarUrl,
+      "isPrivate": isPrivate,
     };
   }
 }
