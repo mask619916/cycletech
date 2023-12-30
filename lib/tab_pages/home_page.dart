@@ -131,6 +131,7 @@ class _HomePageState extends State<HomePage> {
     // Generate a new quote and save it
     String newQuote = getRandomQuote();
     prefs.setString(quoteKey, newQuote);
+    if (!mounted) return;
 
     // Set the quoteOfTheDay to the new quote
     setState(() {
@@ -270,7 +271,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
                       'Quote of the Day',
