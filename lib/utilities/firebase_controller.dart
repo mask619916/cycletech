@@ -32,4 +32,40 @@ class FirebaseController {
 
     dr.set(userDetails.toMap());
   }
+
+  static Future<Map<String, bool>> getAchievementStatus(
+      String userEmail) async {
+    try {
+      final DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('users') // Change this to 'users' collection
+              .doc(userEmail)
+              .get();
+
+      if (snapshot.exists) {
+        // Assuming 'achievements' is the field in the 'users' document
+        final Map<String, bool> achievements =
+            Map<String, bool>.from(snapshot.data()?['achievements'] ?? {});
+        return achievements;
+      } else {
+        return {};
+      }
+    } catch (e) {
+      print('Error getting achievement status: $e');
+      throw e;
+    }
+  }
+
+  static Future<void> updateAchievementStatus(
+      String userEmail, Map<String, bool> newStatus) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('achievements')
+          .doc(userEmail)
+          .set(newStatus);
+    } catch (e) {
+      print('Error updating achievement status: $e');
+      throw e;
+    }
+  }
 }

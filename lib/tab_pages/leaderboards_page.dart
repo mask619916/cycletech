@@ -89,7 +89,7 @@ class LeaderboardTab extends StatelessWidget {
 
   Future<List<double>> fetchData(List<QueryDocumentSnapshot> userData) async {
     var distances = await Future.wait<double>(
-      (userData ?? []).map<Future<double>>(
+      (userData).map<Future<double>>(
         (user) => _calculateTotalDistanceForRides(user.reference),
       ),
     );
@@ -158,12 +158,11 @@ class LeaderboardTab extends StatelessWidget {
                     var userMap =
                         (user as QueryDocumentSnapshot<Map<String, dynamic>>)
                             .data();
-                    var isPrivate = userMap?['isPrivate'] as bool? ?? false;
+                    var isPrivate = userMap['isPrivate'] as bool? ?? false;
 
-                    var fName = isPrivate
-                        ? 'Anonymous'
-                        : (userMap?['fName'] as String?);
-                    var lName = isPrivate ? '' : (userMap?['lName'] as String?);
+                    var fName =
+                        isPrivate ? 'Anonymous' : (userMap['fName'] as String?);
+                    var lName = isPrivate ? '' : (userMap['lName'] as String?);
 
                     fName ??= '';
                     lName ??= '';

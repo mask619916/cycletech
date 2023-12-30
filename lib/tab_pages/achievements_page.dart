@@ -19,7 +19,178 @@ class AchievementsPage extends StatefulWidget {
 }
 
 class _AchievementsPageState extends State<AchievementsPage> {
-  final double _iconSize = 50;
+  final double _iconSize = 25; // Adjust the icon size as needed
+  final double _imageIconSize = 50; // Adjust the image icon size as needed
+
+  // Define the colors for achieved and not achieved icons
+  final Color _achievedColor = Colors.green;
+  final Color _notAchievedColor = Colors.grey;
+
+  // Define the achievement icons
+  final Map<String, IconData> _achievementIcons = {
+    'anchor': FontAwesomeIcons.anchor,
+    'award': FontAwesomeIcons.award,
+    'handFist': FontAwesomeIcons.handFist,
+    'handHoldingHeart': FontAwesomeIcons.handHoldingHeart,
+    'meteor': FontAwesomeIcons.meteor,
+    'sun': FontAwesomeIcons.sun,
+  };
+
+  // Track the status of each achievement
+  Map<String, bool> _achievementStatus = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // Load the achievement status when the page initializes
+    _loadAchievementStatus();
+  }
+
+  // Load the achievement status from Firebase
+  Future<void> _loadAchievementStatus() async {
+    try {
+      final achievementStatus = await FirebaseController.getAchievementStatus(
+          widget.userDetails.email!);
+
+      setState(() {
+        _achievementStatus = achievementStatus;
+      });
+    } catch (e) {
+      print('Error loading achievement status: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Profile"),
+        backgroundColor: currBrightness == Brightness.dark
+            ? Colors.black54
+            : Colors.blue[100],
+        foregroundColor:
+            currBrightness == Brightness.dark ? Colors.white : Colors.black54,
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: const Text("Edit"),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(bottom: 50),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          _showImagePickerOptions();
+                        },
+                        icon: CircleAvatar(
+                          radius: _imageIconSize,
+                          backgroundImage:
+                              widget.userDetails.profileAvatarUrl == null ||
+                                      widget.userDetails.profileAvatarUrl == ''
+                                  ? null
+                                  : NetworkImage(
+                                      widget.userDetails.profileAvatarUrl!,
+                                    ),
+                          child: widget.userDetails.profileAvatarUrl == null ||
+                                  widget.userDetails.profileAvatarUrl == ''
+                              ? Icon(Icons.person_2_outlined,
+                                  size: _imageIconSize)
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(width: 30),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.userDetails.fName ?? "",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            widget.userDetails.lName ?? "",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            widget.userDetails.gender ?? "",
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    "Achievements",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      // Build tiles for each achievement
+                      _buildAchievementTile('anchor',
+                          'To unlock this achievement complete 10000 meters of bicycle riding.'),
+                      _buildAchievementTile('handFist',
+                          'To unlock this achievement go on 6 different cycling explorations.'),
+                      _buildAchievementTile('sun',
+                          'To unlock this achievement go on a bicycle ride early in the morning.'),
+                      _buildAchievementTile('meteor',
+                          'To unlock this achievement complete 2000 meters bicycle ride in less than 2 hours.'),
+                      _buildAchievementTile('handHoldingHeart',
+                          'To unlock this achievement log in for 30 days.'),
+                      _buildAchievementTile(
+                          'award', 'Complete all Achievements'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Build an achievement tile with an icon and description
+  Widget _buildAchievementTile(String achievementName, String description) {
+    // Determine if the achievement is achieved
+    final bool isAchieved = _achievementStatus[achievementName] ?? false;
+
+    // Determine the color based on the achievement status
+    final Color iconColor = isAchieved ? _achievedColor : _notAchievedColor;
+
+    return ListTile(
+      contentPadding: EdgeInsets.all(10),
+      leading: FaIcon(
+        _achievementIcons[achievementName],
+        size: _iconSize,
+        color: iconColor,
+      ),
+      title: Text(description),
+    );
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
@@ -104,140 +275,6 @@ class _AchievementsPageState extends State<AchievementsPage> {
           ],
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profile"),
-        backgroundColor: currBrightness == Brightness.dark
-            ? Colors.black54
-            : Colors.blue[100],
-        foregroundColor:
-            currBrightness == Brightness.dark ? Colors.white : Colors.black54,
-        actions: [
-          TextButton(
-            onPressed: () {},
-            child: const Text("Edit"),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(bottom: 50),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          _showImagePickerOptions();
-                        },
-                        icon: CircleAvatar(
-                          radius: _iconSize,
-                          backgroundImage:
-                              widget.userDetails.profileAvatarUrl == null ||
-                                      widget.userDetails.profileAvatarUrl == ''
-                                  ? null
-                                  : NetworkImage(
-                                      widget.userDetails.profileAvatarUrl!,
-                                    ),
-                          child: widget.userDetails.profileAvatarUrl == null ||
-                                  widget.userDetails.profileAvatarUrl == ''
-                              ? Icon(Icons.person_2_outlined, size: _iconSize)
-                              : null,
-                        ),
-                      ),
-                      const SizedBox(width: 30),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.userDetails.fName ?? "",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            widget.userDetails.lName ?? "",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            widget.userDetails.gender ?? "",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Text(
-                    "Achievements",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      ListTile(
-                        contentPadding: EdgeInsets.all(10),
-                        leading: FaIcon(FontAwesomeIcons.anchor),
-                        title: Text(
-                            "To unlock this achievement complete 10000 meters of bicycle riding."),
-                      ),
-                      ListTile(
-                        contentPadding: EdgeInsets.all(10),
-                        leading: FaIcon(FontAwesomeIcons.handFist),
-                        title: Text(
-                            "To unlock this achievement go on 6 different cycling explorations."),
-                      ),
-                      ListTile(
-                        contentPadding: EdgeInsets.all(10),
-                        leading: FaIcon(FontAwesomeIcons.sun),
-                        title: Text(
-                            "To unlock this achievement go on a bicycle ride early in the morning."),
-                      ),
-                      ListTile(
-                        contentPadding: EdgeInsets.all(10),
-                        leading: FaIcon(FontAwesomeIcons.meteor),
-                        title: Text(
-                            "To unlock this achievement complete 2000 meters bicycle ride in less than 2 hours."),
-                      ),
-                      ListTile(
-                        contentPadding: EdgeInsets.all(10),
-                        leading: FaIcon(FontAwesomeIcons.handHoldingHeart),
-                        title: Text(
-                            "To unlock this achievement log in for 30 days."),
-                      ),
-                      ListTile(
-                        contentPadding: EdgeInsets.all(10),
-                        leading: FaIcon(FontAwesomeIcons.award),
-                        title: Text("Complete all Achievements"),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

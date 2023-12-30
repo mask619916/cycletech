@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:cycletech/models/user_details.dart';
+import 'package:cycletech/utilities/achievement_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -30,6 +31,23 @@ class _MapPageState extends State<MapPage> {
   String _speed = '0.0'; // in m/s
   String _distance = '0.0'; // in meters
   String _caloriesBurnt = '0.0';
+
+  void _checkAndUpdateAchievements() async {
+    try {
+      // Convert _points from LatLng to GeoPoint
+      final List<GeoPoint> geoPoints = _points.map((latLng) {
+        return GeoPoint(latLng.latitude, latLng.longitude);
+      }).toList();
+
+      // Call the function from the AchievementHelper class
+      AchievementHelper.checkAndUpdateAchievements(
+        userEmail: widget.userDetails.email!,
+        coordinates: geoPoints,
+      );
+    } catch (e) {
+      print('Error checking and updating achievements: $e');
+    }
+  }
 
   void _updateInformation(Position position) {
     _speed = position.speed.toStringAsFixed(2);
@@ -263,11 +281,8 @@ class _MapPageState extends State<MapPage> {
                               maxZoom: 16,
                             ));
 
-                            // print(_distance);
-                            // print(_caloriesBurnt);
-                            // print(_points);
-                            // print(_timeElapsed);
-                            // print(DateTime.now());
+                            // Call the function to check and update achievements
+                            _checkAndUpdateAchievements();
 
                             final collectionRef = FirebaseFirestore.instance
                                 .collection('users')
