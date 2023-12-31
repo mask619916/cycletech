@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:cycletech/models/user_details.dart';
+import 'package:cycletech/tab_pages/edit_profile.dart';
 import 'package:cycletech/utilities/firebase_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -72,7 +73,22 @@ class _AchievementsPageState extends State<AchievementsPage> {
             currBrightness == Brightness.dark ? Colors.white : Colors.black54,
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () async {
+              currUserDetails = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EditProfilePage(
+                    userDetails: widget.userDetails,
+                  ),
+                ),
+              );
+
+              setState(() {
+                widget.userDetails.fName = currUserDetails.fName;
+                widget.userDetails.lName = currUserDetails.lName;
+                widget.userDetails.gender = currUserDetails.gender;
+              });
+            },
             child: const Text("Edit"),
           ),
         ],
