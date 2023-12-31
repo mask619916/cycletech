@@ -68,4 +68,49 @@ class FirebaseController {
       throw e;
     }
   }
+
+  static Future<double> getHighestDistance({required String userEmail}) async {
+    double highestDistance = 0.0;
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userEmail)
+        .collection('trackedRides')
+        .get();
+
+    for (final doc in querySnapshot.docs) {
+      final distance = double.parse(doc['distance'].toString());
+
+      if (distance > highestDistance) {
+        highestDistance = distance;
+      }
+    }
+
+    return highestDistance;
+  }
+
+  static Future<Duration> getLongestRide({required String userEmail}) async {
+    Duration highestDuration = Duration();
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userEmail)
+        .collection('trackedRides')
+        .get();
+
+    for (final doc in querySnapshot.docs) {
+      final String timeElapsed = doc['timeElapsed'];
+      final List<String> timeParts = timeElapsed.split(':');
+      final int hours = int.parse(timeParts[0]);
+      final int mins = int.parse(timeParts[1]);
+
+      Duration duration = Duration(hours: hours, minutes: mins);
+
+      if (duration > highestDuration) {
+        highestDuration = duration;
+      }
+    }
+
+    return highestDuration;
+  }
 }

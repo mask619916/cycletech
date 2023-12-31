@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:cycletech/utilities/conts.dart';
+import 'package:cycletech/utilities/firebase_controller.dart';
 import 'package:cycletech/utilities/quote_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -153,237 +154,283 @@ class _HomePageState extends State<HomePage> {
         foregroundColor:
             currBrightness == Brightness.dark ? Colors.white : Colors.black54,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // Weather information
-              Container(
-                decoration: BoxDecoration(
-                  color: currBrightness == Brightness.dark
-                      ? Colors.grey[700]
-                      : Colors.blue[300],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.withOpacity(0.5)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 3,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Current Weather',
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: currBrightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black87,
-                        fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Weather information
+                Container(
+                  decoration: BoxDecoration(
+                    color: currBrightness == Brightness.dark
+                        ? Colors.grey[700]
+                        : Colors.blue[300],
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    if (_weather != null) ...[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _weatherIcon(),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Location: ${_weather?.areaName ?? ""}',
-                                  style: TextStyle(
-                                    color: currBrightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black87,
-                                  ),
-                                ),
-                                _dateTimeInfo(),
-                                Text(
-                                  'Temperature: ${_weather!.temperature?.celsius?.toStringAsFixed(0)}°C',
-                                  style: TextStyle(
-                                    color: currBrightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black87,
-                                  ),
-                                ),
-                                Text(
-                                  'Min/Max: ${_weather!.tempMin?.celsius?.toStringAsFixed(0)}°C / ${_weather!.tempMax?.celsius?.toStringAsFixed(0)}°C',
-                                  style: TextStyle(
-                                    color: currBrightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black87,
-                                  ),
-                                ),
-                                Text(
-                                  'Wind Speed: ${_weather?.windSpeed?.toStringAsFixed(0)}m/s',
-                                  style: TextStyle(
-                                    color: currBrightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black87,
-                                  ),
-                                ),
-                                Text(
-                                  'Humidity: ${_weather?.humidity?.toStringAsFixed(0)}%',
-                                  style: TextStyle(
-                                    color: currBrightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black87,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    ] else ...[
-                      const Center(child: CircularProgressIndicator()),
                     ],
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Quote of the Day
-              Container(
-                decoration: BoxDecoration(
-                  color: currBrightness == Brightness.dark
-                      ? Colors.green[700]
-                      : Colors.greenAccent,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.withOpacity(0.5)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 3,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Quote of the Day',
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: currBrightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black87,
-                        fontWeight: FontWeight.bold,
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Current Weather',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: currBrightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      widget.quoteOfTheDay,
-                      style: TextStyle(
-                        color: currBrightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // User Information
-              Container(
-                decoration: BoxDecoration(
-                  color: currBrightness == Brightness.dark
-                      ? Colors.purple[700]
-                      : Colors.purpleAccent,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.withOpacity(0.5)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 3,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'User Information',
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: currBrightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black87,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    FutureBuilder<DocumentSnapshot>(
-                      future: FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(_auth.currentUser
-                              ?.email) // Use the current user's email as the document ID
-                          .get(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (!snapshot.hasData || snapshot.data == null) {
-                          return Text('User data not available');
-                        } else {
-                          var userData = snapshot.data!;
-
-                          // Replace 'field_name_here' with the actual field names from your Firestore document
-                          String fName = userData['fName'] ?? 'N/A';
-                          String lName = userData['lName'] ?? 'N/A';
-                          String userEmailFirestore = userData.id;
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Name: $fName $lName',
-                                style: TextStyle(
-                                  color: currBrightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black87,
-                                ),
+                      const SizedBox(height: 10),
+                      if (_weather != null) ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _weatherIcon(),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Location: ${_weather?.areaName ?? ""}',
+                                    style: TextStyle(
+                                      color: currBrightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                  _dateTimeInfo(),
+                                  Text(
+                                    'Temperature: ${_weather!.temperature?.celsius?.toStringAsFixed(0)}°C',
+                                    style: TextStyle(
+                                      color: currBrightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Min/Max: ${_weather!.tempMin?.celsius?.toStringAsFixed(0)}°C / ${_weather!.tempMax?.celsius?.toStringAsFixed(0)}°C',
+                                    style: TextStyle(
+                                      color: currBrightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Wind Speed: ${_weather?.windSpeed?.toStringAsFixed(0)}m/s',
+                                    style: TextStyle(
+                                      color: currBrightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Humidity: ${_weather?.humidity?.toStringAsFixed(0)}%',
+                                    style: TextStyle(
+                                      color: currBrightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 10),
-                              Text(
-                                'Email: $userEmailFirestore',
-                                style: TextStyle(
-                                  color: currBrightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black87,
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                      },
-                    ),
-                  ],
+                            ),
+                          ],
+                        )
+                      ] else ...[
+                        const Center(child: CircularProgressIndicator()),
+                      ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 16),
+
+                // Quote of the Day
+                Container(
+                  decoration: BoxDecoration(
+                    color: currBrightness == Brightness.dark
+                        ? Colors.green[700]
+                        : Colors.greenAccent,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Quote of the Day',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: currBrightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        widget.quoteOfTheDay,
+                        style: TextStyle(
+                          color: currBrightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // User Information
+                Container(
+                  decoration: BoxDecoration(
+                    color: currBrightness == Brightness.dark
+                        ? Colors.purple[700]
+                        : Colors.purpleAccent,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 3,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Personal Best',
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: currBrightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(_auth.currentUser
+                                ?.email) // Use the current user's email as the document ID
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (!snapshot.hasData ||
+                              snapshot.data == null) {
+                            return Text('User data not available');
+                          } else {
+                            var userData = snapshot.data!;
+
+                            // Replace 'field_name_here' with the actual field names from your Firestore document
+                            String fName = userData['fName'] ?? 'N/A';
+                            String lName = userData['lName'] ?? 'N/A';
+                            String highestDistance = '';
+                            String highestDurInHour = '';
+                            String highestDurInMin = '';
+
+                            FirebaseController.getLongestRide(
+                                    userEmail: userData['email'])
+                                .then((value) {
+                              highestDurInHour = value.inHours.toString();
+                              highestDurInMin =
+                                  value.inMinutes.remainder(60).toString();
+                            });
+
+                            return FutureBuilder<double>(
+                              future: FirebaseController.getHighestDistance(
+                                userEmail: userData['email'],
+                              ),
+                              builder: (context, distanceSnapshot) {
+                                if (distanceSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                } else if (distanceSnapshot.hasError) {
+                                  return Text(
+                                      'Error: ${distanceSnapshot.error}');
+                                } else {
+                                  highestDistance = distanceSnapshot.data
+                                          ?.toStringAsFixed(0) ??
+                                      '0';
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Text(
+                                        'Name: $fName $lName',
+                                        style: TextStyle(
+                                          color:
+                                              currBrightness == Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.black87,
+                                        ),
+                                      ),
+                                      Text(
+                                        'PB Distance: ${highestDistance} Meters',
+                                        style: TextStyle(
+                                          color:
+                                              currBrightness == Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.black87,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Longest Duration: $highestDurInHour hour(s) and $highestDurInMin min(s)',
+                                        style: TextStyle(
+                                          color:
+                                              currBrightness == Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.black87,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
