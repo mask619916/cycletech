@@ -56,7 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
       height: widget.userDetails.height,
       gender: widget.userDetails.gender,
       dob: widget.userDetails.dob,
-      achievements: widget.userDetails.achievements,
+      achievements: currUserDetails.achievements,
       profileAvatarUrl: widget.userDetails.profileAvatarUrl,
       isPrivate: _isPublic,
     );

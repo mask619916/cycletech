@@ -1,23 +1,28 @@
 import 'dart:async';
 import 'package:cycletech/globals/globaldata.dart';
+import 'package:cycletech/utilities/conts.dart';
 import 'package:cycletech/utilities/quote_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
-import '../utilities/conts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-// ignore: must_be_immutable
 class HomePage extends StatefulWidget {
   String quoteOfTheDay;
 
-  HomePage({Key? key, this.quoteOfTheDay = ""}) : super(key: key);
+  HomePage({
+    Key? key,
+    this.quoteOfTheDay = "",
+  }) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final WeatherFactory _wf = WeatherFactory(OPENWEATHER_API_KEY);
   Weather? _weather;
 
@@ -113,31 +118,28 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _updateQuoteOfTheDay() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String quoteKey = 'quote_of_the_day';
+
+    String newQuote = getRandomQuote();
+    prefs.setString(quoteKey, newQuote);
+
+    if (!mounted) return;
+    setState(() {
+      widget.quoteOfTheDay = newQuote;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
     if (widget.quoteOfTheDay.isEmpty) {
-      // This means it's the first run for a new user
       _updateQuoteOfTheDay();
     }
 
     _getLocationAndFetchWeather();
-  }
-
-  void _updateQuoteOfTheDay() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String quoteKey = 'quote_of_the_day';
-
-    // Generate a new quote and save it
-    String newQuote = getRandomQuote();
-    prefs.setString(quoteKey, newQuote);
-    if (!mounted) return;
-
-    // Set the quoteOfTheDay to the new quote
-    setState(() {
-      widget.quoteOfTheDay = newQuote;
-    });
   }
 
   @override
@@ -292,6 +294,91 @@ class _HomePageState extends State<HomePage> {
                             ? Colors.white
                             : Colors.black87,
                       ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // User Information
+              Container(
+                decoration: BoxDecoration(
+                  color: currBrightness == Brightness.dark
+                      ? Colors.purple[700]
+                      : Colors.purpleAccent,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 3,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'User Information',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: currBrightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(_auth.currentUser
+                              ?.email) // Use the current user's email as the document ID
+                          .get(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (!snapshot.hasData || snapshot.data == null) {
+                          return Text('User data not available');
+                        } else {
+                          var userData = snapshot.data!;
+
+                          // Replace 'field_name_here' with the actual field names from your Firestore document
+                          String fName = userData['fName'] ?? 'N/A';
+                          String lName = userData['lName'] ?? 'N/A';
+                          String userEmailFirestore = userData.id;
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Name: $fName $lName',
+                                style: TextStyle(
+                                  color: currBrightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'Email: $userEmailFirestore',
+                                style: TextStyle(
+                                  color: currBrightness == Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black87,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),

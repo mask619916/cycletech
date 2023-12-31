@@ -32,21 +32,21 @@ class _MapPageState extends State<MapPage> {
   String _distance = '0.0'; // in meters
   String _caloriesBurnt = '0.0';
 
-  void _checkAndUpdateAchievements() async {
-    try {
-      // Convert _points from LatLng to GeoPoint
-      final List<GeoPoint> geoPoints = _points.map((latLng) {
-        return GeoPoint(latLng.latitude, latLng.longitude);
-      }).toList();
-
-      // Call the function from the AchievementHelper class
-      AchievementHelper.checkAndUpdateAchievements(
-        userEmail: widget.userDetails.email!,
-      );
-    } catch (e) {
-      print('Error checking and updating achievements: $e');
-    }
-  }
+  // void _checkAndUpdateAchievements() async {
+  //   try {
+  //     // Convert _points from LatLng to GeoPoint
+  //     final List<GeoPoint> geoPoints = _points.map((latLng) {
+  //       return GeoPoint(latLng.latitude, latLng.longitude);
+  //     }).toList();
+  //
+  //     // Call the function from the AchievementHelper class
+  //     AchievementHelper.checkAndUpdateAchievements(
+  //       userEmail: widget.userDetails.email!,
+  //     );
+  //   } catch (e) {
+  //     print('Error checking and updating achievements: $e');
+  //   }
+  // }
 
   void _updateInformation(Position position) {
     _speed = position.speed.toStringAsFixed(2);
@@ -281,33 +281,34 @@ class _MapPageState extends State<MapPage> {
                             ));
 
                             // Call the function to check and update achievements
-                            await AchievementHelper.checkAndUpdateAchievements(
-                              userEmail: widget.userDetails.email!,
-                            );
+                            currUserDetails = (await AchievementHelper
+                                .checkAndUpdateAchievements(
+                              userDetails: widget.userDetails,
+                            ))!;
 
                             // Call the new function to check and update the Sun achievement
-                            await AchievementHelper
-                                .checkAndUpdateSunAchievement(
-                              userEmail: widget.userDetails.email!,
-                            );
+                            // AchievementHelper
+                            //     .checkAndUpdateSunAchievement(
+                            //   userDetails: widget.userDetails,
+                            // );
 
                             // Call the new function to check and update the Meteor achievement
-                            await AchievementHelper
-                                .checkAndUpdateMeteorAchievement(
-                              userEmail: widget.userDetails.email!,
-                            );
+                            // AchievementHelper
+                            //     .checkAndUpdateMeteorAchievement(
+                            //   userDetails: widget.userDetails,
+                            // );
 
                             // Call the new function to check and update the Hand Holding Heart achievement
-                            await AchievementHelper
-                                .checkAndUpdateHandHoldingHeartAchievement(
-                              userEmail: widget.userDetails.email!,
-                            );
+                            // AchievementHelper
+                            //     .checkAndUpdateHandHoldingHeartAchievement(
+                            //   userDetails: widget.userDetails,
+                            // );
 
                             // Call the new function to check and update the Award achievement
-                            await AchievementHelper
-                                .checkAndUpdateAwardAchievement(
-                              userEmail: widget.userDetails.email!,
-                            );
+                            // await AchievementHelper
+                            //     .checkAndUpdateAwardAchievement(
+                            //   userDetails: widget.userDetails,
+                            // );
 
                             final collectionRef = FirebaseFirestore.instance
                                 .collection('users')

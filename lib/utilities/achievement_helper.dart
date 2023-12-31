@@ -1,48 +1,56 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cycletech/models/user_details.dart';
 
 class AchievementHelper {
-  static Future<void> checkAndUpdateAchievements({
-    required String userEmail,
+  static UserDetails _userDetails = UserDetails();
+
+  static Future<UserDetails?> checkAndUpdateAchievements({
+    required UserDetails userDetails,
   }) async {
+    _userDetails = userDetails;
     try {
-      final totalDistance = await _fetchTotalDistance(userEmail);
+      final totalDistance = await _fetchTotalDistance();
 
       if (totalDistance >= 10000) {
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(userEmail)
+            .doc(userDetails.email)
             .update({'achievements.anchor': true});
+        _userDetails.achievements?.update('anchor', (value) => true);
         print('Achievement updated: Anchor achieved!');
       } else {
         print('Achievement not updated: Distance not sufficient.');
       }
 
       // Check and update Hand Fist achievement
-      await checkAndUpdateHandFistAchievement(userEmail: userEmail);
+      await checkAndUpdateHandFistAchievement();
 
       // Check and update Sun achievement
-      await checkAndUpdateSunAchievement(userEmail: userEmail);
+      await checkAndUpdateSunAchievement();
 
       // Check and update Meteor achievement
-      await checkAndUpdateMeteorAchievement(userEmail: userEmail);
+      await checkAndUpdateMeteorAchievement();
 
       // Check and update Hand Holding Heart achievement
-      await checkAndUpdateHandHoldingHeartAchievement(userEmail: userEmail);
+      await checkAndUpdateHandHoldingHeartAchievement();
 
       // Check and update Award achievement
-      await checkAndUpdateAwardAchievement(userEmail: userEmail);
+      await checkAndUpdateAwardAchievement();
+
+      return _userDetails;
     } catch (e) {
       print('Error checking and updating achievements: $e');
     }
+    return null;
   }
 
-  static Future<double> _fetchTotalDistance(String userEmail) async {
+  static Future<double> _fetchTotalDistance() async {
     double totalDistance = 0.0;
 
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(userEmail)
+          .doc(_userDetails.email)
           .collection('trackedRides')
           .get();
 
@@ -57,13 +65,11 @@ class AchievementHelper {
     return totalDistance;
   }
 
-  static Future<void> checkAndUpdateHandFistAchievement({
-    required String userEmail,
-  }) async {
+  static Future<void> checkAndUpdateHandFistAchievement() async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(userEmail)
+          .doc(_userDetails.email)
           .collection('trackedRides')
           .get();
 
@@ -72,8 +78,9 @@ class AchievementHelper {
         // Update the Hand Fist achievement to true
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(userEmail)
+            .doc(_userDetails.email)
             .update({'achievements.handFist': true});
+        _userDetails.achievements?.update('handFist', (value) => true);
         print('Achievement updated: Hand Fist achieved!');
       } else {
         print('Achievement not updated: Insufficient rides.');
@@ -83,13 +90,11 @@ class AchievementHelper {
     }
   }
 
-  static Future<void> checkAndUpdateSunAchievement({
-    required String userEmail,
-  }) async {
+  static Future<void> checkAndUpdateSunAchievement() async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(userEmail)
+          .doc(_userDetails.email)
           .collection('trackedRides')
           .get();
 
@@ -106,8 +111,9 @@ class AchievementHelper {
         // Update the Sun achievement to true
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(userEmail)
+            .doc(_userDetails.email)
             .update({'achievements.sun': true});
+        _userDetails.achievements?.update('sun', (value) => true);
         print('Achievement updated: Sun achieved!');
       } else {
         print('Achievement not updated: No ride between 5 am and 10 am.');
@@ -117,13 +123,11 @@ class AchievementHelper {
     }
   }
 
-  static Future<void> checkAndUpdateMeteorAchievement({
-    required String userEmail,
-  }) async {
+  static Future<void> checkAndUpdateMeteorAchievement() async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(userEmail)
+          .doc(_userDetails.email)
           .collection('trackedRides')
           .get();
 
@@ -147,8 +151,9 @@ class AchievementHelper {
         // Update the Meteor achievement to true
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(userEmail)
+            .doc(_userDetails.email)
             .update({'achievements.meteor': true});
+        _userDetails.achievements?.update('meteor', (value) => true);
         print('Achievement updated: Meteor achieved!');
       } else {
         print(
@@ -159,13 +164,11 @@ class AchievementHelper {
     }
   }
 
-  static Future<void> checkAndUpdateHandHoldingHeartAchievement({
-    required String userEmail,
-  }) async {
+  static Future<void> checkAndUpdateHandHoldingHeartAchievement() async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(userEmail)
+          .doc(_userDetails.email)
           .collection('trackedRides')
           .get();
 
@@ -184,8 +187,9 @@ class AchievementHelper {
         // Update the Hand Holding Heart achievement to true
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(userEmail)
+            .doc(_userDetails.email)
             .update({'achievements.handHoldingHeart': true});
+        _userDetails.achievements?.update('handHoldingHeart', (value) => true);
         print('Achievement updated: Hand Holding Heart achieved!');
       } else {
         print('Achievement not updated: No ride with 4 hours or more.');
@@ -195,13 +199,11 @@ class AchievementHelper {
     }
   }
 
-  static Future<void> checkAndUpdateAwardAchievement({
-    required String userEmail,
-  }) async {
+  static Future<void> checkAndUpdateAwardAchievement() async {
     try {
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
-          .doc(userEmail)
+          .doc(_userDetails.email)
           .get();
 
       final achievements = userDoc['achievements'] ?? {};
@@ -214,8 +216,9 @@ class AchievementHelper {
         // Update the Award achievement to true
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(userEmail)
+            .doc(_userDetails.email)
             .update({'achievements.award': true});
+        _userDetails.achievements?.update('award', (value) => true);
         print('Achievement updated: Award achieved!');
       } else {
         print('Achievement not updated: Not all achievements are true.');
