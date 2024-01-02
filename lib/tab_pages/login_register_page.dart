@@ -1,3 +1,4 @@
+// Importing necessary packages and libraries
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cycletech/components/dropmenu.dart';
 import 'package:cycletech/globals/globaldata.dart';
@@ -10,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+// Define the main class for the login/register page
 class LoginRegisterPage extends StatefulWidget {
   const LoginRegisterPage({super.key});
 
@@ -17,11 +19,13 @@ class LoginRegisterPage extends StatefulWidget {
   State<LoginRegisterPage> createState() => _LoginRegisterPageState();
 }
 
+// Define the state for the login/register page
 class _LoginRegisterPageState extends State<LoginRegisterPage> {
+  // Initialize variables
   String? errorMessage = '';
   bool isLogin = true;
 
-  // This is mainly for the keyboard making the functionality of IOS keyboard better
+  // Controllers for text input fields
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
   final TextEditingController _controllerFname = TextEditingController();
@@ -30,6 +34,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
   final TextEditingController _controllerHeight = TextEditingController();
   final TextEditingController _controllerDob = TextEditingController();
 
+  // Function to sign in with email and password
   Future<void> signInWithEmailAndPassword() async {
     try {
       await Auth().signInWithEmailAndPassword(
@@ -47,12 +52,14 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
     }
   }
 
+  // Function to create a new user with email and password
   Future<void> createUserWithEmailAndPassword() async {
     try {
       await Auth().createUserWithEmailAndPassword(
         email: _controllerEmail.text,
         password: _controllerPassword.text,
       );
+      // Create UserDetails object with user information
       UserDetails ud = UserDetails(
         email: _controllerEmail.text,
         fName: _controllerFname.text,
@@ -71,6 +78,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
           'sun': false,
         },
       );
+      // Call FirebaseController to create and update user information
       FirebaseController.createAndUpdateUser(ud);
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -83,9 +91,8 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
     }
   }
 
-// this is a function to create the calender for the date picker in the registration
+  // Function to create a date picker for selecting date of birth
   DateTime selectedDate = DateTime.now();
-
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -102,6 +109,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
     _controllerDob.text = selectedDate.toString().substring(0, 10);
   }
 
+  // Build method for the widget
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -115,13 +123,11 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 40),
           child: SingleChildScrollView(
-            // scrollDirection: Axis.vertical,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 const SizedBox(height: 75),
-
                 // Circle Icon
                 const CircleAvatar(
                   radius: 100,
@@ -130,7 +136,6 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                     size: 100,
                   ),
                 ),
-
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -140,15 +145,13 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                       type: TextFieldType.normal,
                       controller: _controllerEmail,
                     ),
-
                     // Password text field
                     CustomTextField(
                       title: 'Password',
                       type: TextFieldType.password,
                       controller: _controllerPassword,
                     ),
-
-                    //first name input
+                    // First name input
                     isLogin
                         ? Container()
                         : CustomTextField(
@@ -156,7 +159,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                             type: TextFieldType.normal,
                             controller: _controllerFname,
                           ),
-                    //last name input
+                    // Last name input
                     isLogin
                         ? Container()
                         : CustomTextField(
@@ -164,7 +167,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                             type: TextFieldType.normal,
                             controller: _controllerLname,
                           ),
-                    //height input
+                    // Height input
                     isLogin
                         ? Container()
                         : CustomTextField(
@@ -172,7 +175,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                             type: TextFieldType.number,
                             controller: _controllerHeight,
                           ),
-                    //weight input
+                    // Weight input
                     isLogin
                         ? Container()
                         : CustomTextField(
@@ -180,7 +183,7 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                             type: TextFieldType.number,
                             controller: _controllerWeight,
                           ),
-                    //Date of birth input
+                    // Date of birth input
                     isLogin
                         ? Container()
                         : CustomTextField(
@@ -192,15 +195,12 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                               icon: const Icon(Icons.calendar_month_outlined),
                             ),
                           ),
-
                     // Gender input
                     isLogin ? Container() : DropdownExample()
                   ],
                 ),
-
                 // Display error message (if any)
                 Text(errorMessage == '' ? '' : '$errorMessage'),
-
                 // Submit button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -223,7 +223,6 @@ class _LoginRegisterPageState extends State<LoginRegisterPage> {
                     ),
                   ],
                 ),
-
                 // Switch to Login or Register button
                 TextButton(
                   onPressed: () {

@@ -1,12 +1,15 @@
+// Import necessary packages
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cycletech/globals/globaldata.dart';
 import 'package:flutter/material.dart';
 
+// Define the LeaderboardsPage widget
 class LeaderboardsPage extends StatelessWidget {
   const LeaderboardsPage({Key? key});
 
   @override
   Widget build(BuildContext context) {
+    // Create a tabbed view for Daily, Weekly, and All Time leaderboards
     return DefaultTabController(
       length: 3, // Three tabs: Daily, Weekly, All Time
       child: Scaffold(
@@ -39,11 +42,13 @@ class LeaderboardsPage extends StatelessWidget {
   }
 }
 
+// Define the LeaderboardTab widget
 class LeaderboardTab extends StatelessWidget {
   final String title;
 
   const LeaderboardTab({Key? key, required this.title}) : super(key: key);
 
+  // Function to fetch users with rides for the specified period
   Future<List<QueryDocumentSnapshot>> fetchUsersWithRides(
       QuerySnapshot<Map<String, dynamic>> snapshot) async {
     var userData = <QueryDocumentSnapshot>[];
@@ -57,6 +62,7 @@ class LeaderboardTab extends StatelessWidget {
     return userData;
   }
 
+  // Function to check if a user has rides for the specified period
   Future<bool> hasRidesForPeriod(
       QueryDocumentSnapshot user, String period) async {
     var today = DateTime.now();
@@ -87,18 +93,18 @@ class LeaderboardTab extends StatelessWidget {
     return ridesForPeriod.docs.isNotEmpty;
   }
 
+  // Function to fetch total distances for users
   Future<List<double>> fetchData(List<QueryDocumentSnapshot> userData) async {
-    var distances = await Future.wait<double>(
+    return Future.wait<double>(
       (userData).map<Future<double>>(
         (user) => _calculateTotalDistanceForRides(user.reference),
       ),
     );
-
-    return distances;
   }
 
   @override
   Widget build(BuildContext context) {
+    // StreamBuilder to listen for changes in the 'users' collection
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance.collection('users').snapshots(),
       builder: (context, snapshot) {
@@ -110,6 +116,7 @@ class LeaderboardTab extends StatelessWidget {
           return Text('Error: ${snapshot.error}');
         }
 
+        // FutureBuilder to fetch users with rides
         return FutureBuilder<List<QueryDocumentSnapshot>>(
           future: fetchUsersWithRides(snapshot.data!),
           builder: (context, usersSnapshot) {
@@ -123,6 +130,7 @@ class LeaderboardTab extends StatelessWidget {
               return Text('No data available');
             }
 
+            // FutureBuilder to fetch distances for users
             return FutureBuilder<List<double>>(
               future: fetchData(userData),
               builder: (context, distancesSnapshot) {
@@ -137,6 +145,7 @@ class LeaderboardTab extends StatelessWidget {
                   return Text('No data available');
                 }
 
+                // Combine user data with distances and display the leaderboard
                 var combinedData = List.generate(userData.length, (index) {
                   var user = userData[index];
                   var distance = distances[index];
@@ -193,6 +202,7 @@ class LeaderboardTab extends StatelessWidget {
     );
   }
 
+  // Function to calculate the total distance covered by a user for a specified period
   Future<double> _calculateTotalDistanceForRides(
       DocumentReference userReference) async {
     var trackedRidesCollection = userReference.collection('trackedRides');

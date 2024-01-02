@@ -20,6 +20,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  // State variables
   bool _isDarkMode = false;
   bool _isPublic = false;
   late String _selectedLocation = "Bahrain"; // Initialize with a default value
@@ -31,6 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
     loadPrefs();
   }
 
+  // Load preferences from SharedPreferences
   void loadPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -40,6 +42,7 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
 
+  // Save preferences to SharedPreferences and update Firebase user data
   void savePref() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('darkMode', _isDarkMode);
@@ -47,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
     await prefs.setString('location', _selectedLocation);
     widget.onDarkModeChanged(_isDarkMode);
 
-    // firebase
+    // Update Firebase user data
     UserDetails ud = UserDetails(
       email: widget.userDetails.email,
       fName: widget.userDetails.fName,
@@ -65,6 +68,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Determine the current brightness (light/dark mode)
     _isDarkMode = (currBrightness == Brightness.dark);
 
     return Scaffold(
@@ -81,6 +85,7 @@ class _SettingsPageState extends State<SettingsPage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              // Dark Mode Switch
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -98,6 +103,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
+              // Leaderboard Public Privacy Switch
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -112,6 +118,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
+              // Location Dropdown
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -144,6 +151,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ],
               ),
+              // Sign Out Button
               Container(
                 margin: const EdgeInsets.only(top: 16.0),
                 child: SignOutButton(),

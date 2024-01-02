@@ -1,3 +1,4 @@
+// Importing necessary packages and libraries
 import 'dart:async';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:cycletech/globals/globaldata.dart';
@@ -14,6 +15,7 @@ import '../utilities/quote_generator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/scheduler.dart';
 
+// Define the main class for the tab bar navigation
 class TabBarNavigationController extends StatefulWidget {
   const TabBarNavigationController({Key? key}) : super(key: key);
 
@@ -22,8 +24,10 @@ class TabBarNavigationController extends StatefulWidget {
       _TabBarNavigationControllerState();
 }
 
+// Define the state for the tab bar navigation
 class _TabBarNavigationControllerState
     extends State<TabBarNavigationController> {
+  // List of icons for the bottom navigation bar
   final List<IconData> _iconList = [
     Icons.home_outlined,
     Icons.leaderboard_outlined,
@@ -41,7 +45,7 @@ class _TabBarNavigationControllerState
   late Timer _quoteTimer;
   late bool _isVisible;
 
-  // Quote stuff
+  // Function to set up the quote timer
   void _setupQuoteTimer() {
     _quoteTimer = Timer.periodic(
       const Duration(seconds: 1),
@@ -50,28 +54,24 @@ class _TabBarNavigationControllerState
           _countdownInSeconds = 50;
 
           if (_isVisible &&
-              SchedulerBinding.instance.lifecycleState ==
+              SchedulerBinding.instance!.lifecycleState ==
                   AppLifecycleState.resumed) {
             _updateQuoteOfTheDay();
           }
         } else {
           _countdownInSeconds--;
         }
-
-        // print("${_countdownInSeconds} seconds until quote update check");
       },
     );
   }
 
+  // Function to update the quote of the day
   void _updateQuoteOfTheDay() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // print("Forcing Update Quote of the Day...");
 
     String quoteKey = 'quote_of_the_day';
 
     DateTime now = DateTime.now();
-    // print("${now.hour}h:${now.minute}m");
     if (now.hour == 8 && now.minute == 0) {
       // Generate a new quote and save it
       String newQuote = getRandomQuote();
@@ -81,11 +81,10 @@ class _TabBarNavigationControllerState
       if (!mounted) return;
 
       setState(() {
-        // print("Setting state with new quote: $newQuote");
         _quoteOfTheDay = newQuote;
       });
     } else {
-      // reading quote from local storage
+      // Reading quote from local storage
       String loadedQuote = prefs.getString(quoteKey) ??
           "Riding a bike is like an art, something you do because you feel something inside. - Valentino Rossi";
 
@@ -93,7 +92,6 @@ class _TabBarNavigationControllerState
       if (!mounted) return;
 
       setState(() {
-        // print("Setting state with new quote: $loadedQuote");
         _quoteOfTheDay = loadedQuote;
       });
     }
@@ -109,7 +107,7 @@ class _TabBarNavigationControllerState
     _userDetails = UserDetails();
     _currPage = Container();
 
-    // read user's info from firebase
+    // Read user's info from Firebase
     FirebaseController.readUserInfo().then((value) {
       setState(() {
         _userDetails = value;
@@ -127,6 +125,7 @@ class _TabBarNavigationControllerState
 
   @override
   Widget build(BuildContext context) {
+    // List of pages for the bottom navigation bar
     _pagesList = [
       HomePage(quoteOfTheDay: _quoteOfTheDay),
       const LeaderboardsPage(),

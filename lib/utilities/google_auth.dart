@@ -1,20 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-// google sign in
+// Class for handling Google Sign-In
 class GoogleAuth {
-  // start for user to sign in process
+  // Function to initiate the Google Sign-In process
   signInWithGoogle() async {
+    // Start the Google Sign-In process and get the user account
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
-// obtain auth from request
-    final GoogleSignInAuthentication gAuth = await gUser!.authentication;
-    // create new credential for user
+
+    // Check if the user canceled the Google Sign-In process
+    if (gUser == null) {
+      // Return or handle accordingly, e.g., show a message to the user
+      return null;
+    }
+
+    // Obtain authentication details from the Google Sign-In request
+    final GoogleSignInAuthentication gAuth = await gUser.authentication;
+
+    // Create new credentials for the user using Google Sign-In details
     final credential = GoogleAuthProvider.credential(
       accessToken: gAuth.accessToken,
       idToken: gAuth.idToken,
     );
 
-    // sign in return to firebase
+    // Sign in with the created credentials and return the result
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 }

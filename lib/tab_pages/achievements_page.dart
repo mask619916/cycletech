@@ -74,6 +74,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
         actions: [
           TextButton(
             onPressed: () async {
+              // Navigate to the EditProfilePage and await the updated user details
               currUserDetails = await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -83,6 +84,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                 ),
               );
 
+              // Update the widget state with the new user details
               setState(() {
                 widget.userDetails.fName = currUserDetails.fName;
                 widget.userDetails.lName = currUserDetails.lName;
@@ -105,6 +107,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                   padding: const EdgeInsets.only(top: 20),
                   child: Row(
                     children: [
+                      // Profile Avatar
                       IconButton(
                         onPressed: () {
                           _showImagePickerOptions();
@@ -126,7 +129,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                         ),
                       ),
                       const SizedBox(width: 30),
-                      // Updated part to have first name, last name, and age on the same line
+                      // User Information (Name, Gender)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -155,6 +158,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                   ),
                 ),
                 SizedBox(height: 20),
+                // Achievements Section
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Text(
@@ -165,6 +169,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
                     ),
                   ),
                 ),
+                // Container for Achievements List
                 Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
@@ -216,6 +221,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
     );
   }
 
+  // Pick image from camera or gallery
   Future<void> _pickImage(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
     XFile? file;
@@ -230,17 +236,21 @@ class _AchievementsPageState extends State<AchievementsPage> {
     }
 
     if (file != null) {
+      // Set up file extension and name for Firebase Storage
       String fileExtension = file.name.substring(file.name.indexOf('.'));
       String fileName =
           "${FirebaseAuth.instance.currentUser!.email}_profileAvatar$fileExtension";
 
+      // Set up Firebase Storage references
       Reference referenceRoot = FirebaseStorage.instance.ref();
       Reference referenceDirImages = referenceRoot.child('images');
       Reference referenceImageToUpload = referenceDirImages.child(fileName);
 
       try {
         String? imageUrl;
+        // Upload image to Firebase Storage
         await referenceImageToUpload.putFile(File(file.path));
+        // Get the download URL for the uploaded image
         imageUrl = await referenceImageToUpload.getDownloadURL();
 
         // Use setState to trigger a rebuild of the widget
@@ -248,10 +258,12 @@ class _AchievementsPageState extends State<AchievementsPage> {
           widget.userDetails.profileAvatarUrl = imageUrl;
         });
 
+        // Update user details in Firebase Firestore
         FirebaseController.createAndUpdateUser(
           widget.userDetails,
         );
 
+        // Show a success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -261,6 +273,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
           ),
         );
       } catch (e) {
+        // Show an error message if the upload fails
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -273,6 +286,7 @@ class _AchievementsPageState extends State<AchievementsPage> {
     }
   }
 
+  // Show modal bottom sheet with image picker options
   Future<void> _showImagePickerOptions() async {
     await showModalBottomSheet(
       context: context,
