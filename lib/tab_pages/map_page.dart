@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+// MapPage widget
 class MapPage extends StatefulWidget {
   const MapPage({super.key, required this.userDetails});
 
@@ -20,6 +21,7 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
+// State for the MapPage widget
 class _MapPageState extends State<MapPage> {
   Position? initialPos;
   final MapController _mapController = MapController();
@@ -32,26 +34,18 @@ class _MapPageState extends State<MapPage> {
   String _distance = '0.0'; // in meters
   String _caloriesBurnt = '0.0';
 
-
+  // Function to update information based on position
   void _updateInformation(Position position) {
     _speed = position.speed.toStringAsFixed(2);
 
-    // print(_points);
-
     if (_points.length > 1) {
       final LatLng lastPoint = _points[_points.length - 2];
-
-      // print('Last Point: $lastPoint');
-      // print('Current Point: ${LatLng(position.latitude, position.longitude)}');
-
       final distance = Geolocator.distanceBetween(
         lastPoint.latitude,
         lastPoint.longitude,
         position.latitude,
         position.longitude,
       );
-
-      // print('Distance: $distance meters');
 
       if (distance > 0.0) {
         double tempDistance = double.parse(_distance);
@@ -70,66 +64,7 @@ class _MapPageState extends State<MapPage> {
   late Timer _timer;
   bool _isRunning = false;
 
-  void _initPositionStream() {
-    int distanceFilterInMeters = 10;
-    LocationSettings locationSettings;
-
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      locationSettings = AndroidSettings(
-        accuracy: LocationAccuracy.bestForNavigation,
-        distanceFilter: distanceFilterInMeters,
-        forceLocationManager: true,
-        intervalDuration: const Duration(seconds: 1),
-        foregroundNotificationConfig: const ForegroundNotificationConfig(
-          notificationText:
-              "CycleTech will continue to receive your location even when you aren't using it",
-          notificationTitle: "Running in Background",
-          enableWakeLock: true,
-        ),
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.macOS) {
-      locationSettings = AppleSettings(
-        accuracy: LocationAccuracy.bestForNavigation,
-        activityType: ActivityType.fitness,
-        distanceFilter: distanceFilterInMeters,
-        pauseLocationUpdatesAutomatically: true,
-        showBackgroundLocationIndicator: true,
-      );
-    } else {
-      locationSettings = LocationSettings(
-        accuracy: LocationAccuracy.bestForNavigation,
-        distanceFilter: distanceFilterInMeters,
-      );
-    }
-
-    _positionStream =
-        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-      (Position? position) {
-        if (position == null) {
-          return;
-        }
-
-        setState(() {
-          _locationCords = LatLng(position.latitude, position.longitude);
-        });
-
-        _mapController.moveAndRotate(
-          _locationCords,
-          18,
-          360 - position.heading,
-        );
-
-        _points.add(_locationCords);
-
-        setState(() {
-          _updateInformation(position);
-        });
-      },
-    );
-  }
-
-  // For stopwatch
+  // Function to update timer display
   void _updateTimer(Timer timer) {
     if (_isRunning) {
       setState(() {
@@ -138,6 +73,7 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
+  // Function to format elapsed time
   String _formattedTime() {
     int hundreds = (_stopwatch.elapsedMilliseconds ~/ 10) % 100;
     int seconds = (_stopwatch.elapsedMilliseconds ~/ 1000) % 60;
@@ -150,6 +86,7 @@ class _MapPageState extends State<MapPage> {
     return _timeElapsed;
   }
 
+  // Function to start stopwatch
   void _startStopwatch() {
     setState(() {
       _isRunning = true;
@@ -157,6 +94,7 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  // Function to stop stopwatch
   void _stopStopwatch() {
     setState(() {
       _isRunning = false;
@@ -164,14 +102,7 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  // Uncomment if required in future
-  // void _resetStopwatch() {
-  //   setState(() {
-  //     _isRunning = true;
-  //     _stopwatch.reset();
-  //   });
-  // }
-
+  // Function to display controls
   Widget _displayControls() {
     return Column(
       children: [
@@ -271,7 +202,6 @@ class _MapPageState extends State<MapPage> {
                               userDetails: widget.userDetails,
                             ))!;
 
-
                             final collectionRef = FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(widget.userDetails.email)
@@ -310,6 +240,66 @@ class _MapPageState extends State<MapPage> {
                 ],
               ),
       ],
+    );
+  }
+
+  // Initialize the position stream
+  void _initPositionStream() {
+    int distanceFilterInMeters = 10;
+    LocationSettings locationSettings;
+
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      locationSettings = AndroidSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: distanceFilterInMeters,
+        forceLocationManager: true,
+        intervalDuration: const Duration(seconds: 1),
+        foregroundNotificationConfig: const ForegroundNotificationConfig(
+          notificationText:
+              "CycleTech will continue to receive your location even when you aren't using it",
+          notificationTitle: "Running in Background",
+          enableWakeLock: true,
+        ),
+      );
+    } else if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS) {
+      locationSettings = AppleSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        activityType: ActivityType.fitness,
+        distanceFilter: distanceFilterInMeters,
+        pauseLocationUpdatesAutomatically: true,
+        showBackgroundLocationIndicator: true,
+      );
+    } else {
+      locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: distanceFilterInMeters,
+      );
+    }
+
+    _positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+      (Position? position) {
+        if (position == null) {
+          return;
+        }
+
+        setState(() {
+          _locationCords = LatLng(position.latitude, position.longitude);
+        });
+
+        _mapController.moveAndRotate(
+          _locationCords,
+          18,
+          360 - position.heading,
+        );
+
+        _points.add(_locationCords);
+
+        setState(() {
+          _updateInformation(position);
+        });
+      },
     );
   }
 
